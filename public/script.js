@@ -1,0 +1,825 @@
+// DOM Elements
+const landingPage = document.getElementById('landing-page');
+const chatPage = document.getElementById('chat-page');
+const nicknameInput = document.getElementById('nickname');
+const ageInput = document.getElementById('age');
+const countryInput = document.getElementById('country');
+const stateInput = document.getElementById('state');
+// Room input removed - using state as room
+const enterChatBtn = document.getElementById('enter-chat');
+const welcomeMessage = document.getElementById('welcome-message');
+const navUsername = document.getElementById('nav-username');
+const leaveChatBtn = document.getElementById('leave-chat');
+const messagesContainer = document.getElementById('messages-container');
+const messageInput = document.getElementById('message-input');
+const sendMessageBtn = document.getElementById('send-message');
+const roomsContainer = document.getElementById('rooms-container');
+const inboxContainer = document.getElementById('inbox-container');
+const usersList = document.getElementById('users-list');
+const privateChatModal = document.getElementById('private-chat-modal');
+const privateChatTitle = document.getElementById('private-chat-title');
+const closePrivateChatBtn = document.getElementById('close-private-chat');
+const privateMessages = document.getElementById('private-messages');
+const privateMessageInput = document.getElementById('private-message-input');
+const sendPrivateMessageBtn = document.getElementById('send-private-message');
+
+// Mobile menu elements
+const hamburgerMenu = document.getElementById('hamburger-menu');
+const mobileNavMenu = document.getElementById('mobile-nav-menu');
+const mobileMenuClose = document.getElementById('mobile-menu-close');
+const backdropOverlay = document.getElementById('backdrop-overlay');
+const mobileLeaveChatBtn = document.getElementById('mobile-leave-chat');
+
+// Mobile navigation elements
+const chatView = document.getElementById('chat-view');
+const roomsView = document.getElementById('rooms-view');
+const usersView = document.getElementById('users-view');
+const privateView = document.getElementById('private-view');
+const mobileRoomsContainer = document.getElementById('mobile-rooms-container');
+const mobileUsersList = document.getElementById('mobile-users-list');
+const mobileInboxContainer = document.getElementById('mobile-inbox-container');
+const navTabs = document.querySelectorAll('.nav-tab');
+
+// Header navigation elements
+const freeChatRoomsBtn = document.getElementById('free-chat-rooms');
+const oneOnOneChatBtn = document.getElementById('one-on-one-chat');
+const chatRoomsBtn = document.getElementById('chat-rooms');
+const inboxBtn = document.getElementById('inbox');
+const profileBtn = document.getElementById('profile');
+
+// Profile modal elements
+const profileModal = document.getElementById('profile-modal');
+const closeProfileBtn = document.getElementById('close-profile');
+const updateProfileBtn = document.getElementById('update-profile');
+
+// User data
+let currentUser = {
+    nickname: '',
+    age: '',
+    gender: '',
+    country: '',
+    state: ''
+};
+
+let currentPrivateChatUser = null;
+let socket = null;
+let privateMessageHistory = {};
+
+// Initialize Socket.io
+function initSocket() {
+    socket = io();
+
+    // Listen for chat messages
+    socket.on('chat-message', (data) => {
+        displayMessage(data);
+    });
+
+    // Listen for system messages
+    socket.on('system-message', (data) => {
+        displaySystemMessage(data.message);
+    });
+
+    // Listen for user list updates
+    socket.on('user-list', (users) => {
+        displayUsers(users);
+    });
+
+
+
+    // Listen for private messages
+    socket.on('private-message', (data) => {
+        displayPrivateMessage(data);
+    });
+
+    // Listen for errors
+    socket.on('error', (data) => {
+        alert(data.message);
+    });
+}
+
+// Populate age dropdown (18-99)
+function populateAgeDropdown() {
+    const ageSelect = document.getElementById('age');
+    for (let i = 18; i <= 99; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        ageSelect.appendChild(option);
+    }
+}
+
+// Get selected gender from radio buttons
+function getSelectedGender() {
+    const genderRadios = document.getElementsByName('gender');
+    for (const radio of genderRadios) {
+        if (radio.checked) {
+            return radio.value;
+        }
+    }
+    return '';
+}
+
+// Enter chat room
+enterChatBtn.addEventListener('click', () => {
+    const nickname = nicknameInput.value.trim();
+    const age = ageInput.value;
+    const gender = getSelectedGender();
+    const country = countryInput.value;
+    const state = stateInput.value;
+
+    if (!nickname || !age || !gender || !country || !state) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    if (age < 18) {
+        alert('You must be 18 or older to join this chat.');
+        return;
+    }
+
+    currentUser = { nickname, age, gender, country, state };
+
+    // Initialize socket and join
+    initSocket();
+    socket.emit('join', currentUser);
+
+    // Update UI
+    landingPage.classList.add('hidden');
+    chatPage.classList.remove('hidden');
+    welcomeMessage.textContent = `Welcome to ${state} Chat Room`;
+    navUsername.textContent = nickname;
+
+    // Clear messages
+    messagesContainer.innerHTML = '';
+    displaySystemMessage(`Welcome to ${state} Chat Room!`);
+    
+    // Display state room in sidebar
+    displayRooms();
+    
+    // Initialize inbox
+    displayInbox();
+});
+
+// Leave chat
+leaveChatBtn.addEventListener('click', () => {
+    if (socket) {
+        socket.disconnect();
+    }
+    chatPage.classList.add('hidden');
+    landingPage.classList.remove('hidden');
+    
+    // Reset form
+    nicknameInput.value = '';
+    ageInput.value = '';
+    countryInput.value = '';
+    stateInput.value = '';
+    
+    // Reset gender radio buttons
+    const genderRadios = document.getElementsByName('gender');
+    for (const radio of genderRadios) {
+        radio.checked = false;
+    }
+    
+    messagesContainer.innerHTML = '';
+});
+
+// Send message
+sendMessageBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendMessage();
+    }
+});
+
+function sendMessage() {
+    const message = messageInput.value.trim();
+    if (!message) return;
+
+    socket.emit('chat-message', { message });
+    messageInput.value = '';
+}
+
+// Display message in chat
+function displayMessage(data) {
+    const messageDiv = document.createElement('div');
+    const isOwn = data.nickname === currentUser.nickname;
+    
+    messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+    
+    messageDiv.innerHTML = `
+        <div class="message-header">
+            <span class="nickname">${data.nickname}</span>
+            <span class="timestamp">${data.timestamp}</span>
+        </div>
+        <div class="message-bubble">${escapeHtml(data.message)}</div>
+    `;
+    
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Display system message
+function displaySystemMessage(message) {
+    const messageDiv = document.createElement('div');
+    messageDiv.className = 'system-message';
+    messageDiv.textContent = message;
+    messagesContainer.appendChild(messageDiv);
+    messagesContainer.scrollTop = messagesContainer.scrollHeight;
+}
+
+// Display current state room
+function displayRooms() {
+    // Desktop sidebar - show current state room only
+    roomsContainer.innerHTML = '';
+    const li = document.createElement('li');
+    li.textContent = currentUser.state;
+    li.className = 'active';
+    roomsContainer.appendChild(li);
+    
+    // Mobile view
+    mobileRoomsContainer.innerHTML = '';
+    const mobileLi = document.createElement('li');
+    mobileLi.textContent = currentUser.state;
+    mobileLi.className = 'active';
+    mobileRoomsContainer.appendChild(mobileLi);
+}
+
+// Display inbox/private messages
+function displayInbox() {
+    inboxContainer.innerHTML = '';
+    
+    const conversations = Object.keys(privateMessageHistory);
+    
+    if (conversations.length === 0) {
+        const emptyLi = document.createElement('li');
+        emptyLi.className = 'inbox-empty';
+        emptyLi.textContent = 'No private messages yet';
+        inboxContainer.appendChild(emptyLi);
+        return;
+    }
+    
+    conversations.forEach(nickname => {
+        const history = privateMessageHistory[nickname];
+        const lastMessage = history[history.length - 1];
+        const li = document.createElement('li');
+        
+        const initials = nickname.substring(0, 2).toUpperCase();
+        
+        li.innerHTML = `
+            <div class="inbox-avatar">${initials}</div>
+            <div class="inbox-info">
+                <div class="inbox-name">${escapeHtml(nickname)}</div>
+                <div class="inbox-preview">${escapeHtml(lastMessage.message)}</div>
+            </div>
+        `;
+        
+        li.addEventListener('click', () => {
+            openPrivateChat(nickname);
+        });
+        
+        inboxContainer.appendChild(li);
+    });
+}
+
+// Display mobile inbox/private messages
+function displayMobileInbox() {
+    mobileInboxContainer.innerHTML = '';
+    
+    const conversations = Object.keys(privateMessageHistory);
+    
+    if (conversations.length === 0) {
+        const emptyLi = document.createElement('li');
+        emptyLi.className = 'inbox-empty';
+        emptyLi.textContent = 'No private messages yet';
+        mobileInboxContainer.appendChild(emptyLi);
+        return;
+    }
+    
+    conversations.forEach(nickname => {
+        const history = privateMessageHistory[nickname];
+        const lastMessage = history[history.length - 1];
+        const li = document.createElement('li');
+        
+        const initials = nickname.substring(0, 2).toUpperCase();
+        
+        li.innerHTML = `
+            <div class="inbox-avatar">${initials}</div>
+            <div class="inbox-info">
+                <div class="inbox-name">${escapeHtml(nickname)}</div>
+                <div class="inbox-preview">${escapeHtml(lastMessage.message)}</div>
+            </div>
+        `;
+        
+        li.addEventListener('click', () => {
+            openPrivateChat(nickname);
+        });
+        
+        mobileInboxContainer.appendChild(li);
+    });
+}
+
+// Display online users
+function displayUsers(users) {
+    // Desktop sidebar
+    usersList.innerHTML = '';
+    users.forEach(user => {
+        const li = document.createElement('li');
+        
+        const initials = user.nickname.substring(0, 2).toUpperCase();
+        const countryFlag = getCountryFlag(user.country);
+        
+        li.innerHTML = `
+            <div class="user-avatar">${initials}</div>
+            <div class="user-info-text">
+                <div class="user-name">${escapeHtml(user.nickname)}</div>
+                <div class="user-details">${user.age} • ${user.gender} • ${countryFlag} ${user.state}</div>
+            </div>
+            <div class="online-status"></div>
+            ${user.nickname !== currentUser.nickname ? `<button class="btn-report" data-nickname="${escapeHtml(user.nickname)}">Report</button>` : ''}
+        `;
+        
+        if (user.nickname !== currentUser.nickname) {
+            li.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('btn-report')) {
+                    openPrivateChat(user.nickname);
+                }
+            });
+            
+            const reportBtn = li.querySelector('.btn-report');
+            if (reportBtn) {
+                reportBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    reportUser(user.nickname);
+                });
+            }
+        }
+        
+        usersList.appendChild(li);
+    });
+    
+    // Mobile view
+    mobileUsersList.innerHTML = '';
+    users.forEach(user => {
+        const li = document.createElement('li');
+        
+        const initials = user.nickname.substring(0, 2).toUpperCase();
+        const countryFlag = getCountryFlag(user.country);
+        
+        li.innerHTML = `
+            <div class="user-avatar">${initials}</div>
+            <div class="user-info-text">
+                <div class="user-name">${escapeHtml(user.nickname)}</div>
+                <div class="user-details">${user.age} • ${user.gender} • ${countryFlag} ${user.state}</div>
+            </div>
+            <div class="online-status"></div>
+            ${user.nickname !== currentUser.nickname ? `<button class="btn-report" data-nickname="${escapeHtml(user.nickname)}">Report</button>` : ''}
+        `;
+        
+        if (user.nickname !== currentUser.nickname) {
+            li.addEventListener('click', (e) => {
+                if (!e.target.classList.contains('btn-report')) {
+                    openPrivateChat(user.nickname);
+                }
+            });
+            
+            const reportBtn = li.querySelector('.btn-report');
+            if (reportBtn) {
+                reportBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    reportUser(user.nickname);
+                });
+            }
+        }
+        
+        mobileUsersList.appendChild(li);
+    });
+}
+
+// Get country flag emoji
+function getCountryFlag(country) {
+    const flags = {
+        'India': '🇮🇳',
+        'United States': '🇺🇸',
+        'United Kingdom': '🇬🇧',
+        'Canada': '🇨🇦',
+        'Australia': '🇦🇺',
+        'Germany': '🇩🇪',
+        'France': '🇫🇷',
+        'Other': '🌍'
+    };
+    return flags[country] || '🌍';
+}
+
+// Open private chat
+function openPrivateChat(nickname) {
+    currentPrivateChatUser = nickname;
+    privateChatTitle.textContent = `Private Chat with ${nickname}`;
+    privateMessages.innerHTML = '';
+    
+    // Load message history if exists
+    if (privateMessageHistory[nickname]) {
+        privateMessageHistory[nickname].forEach(msg => {
+            const isOwn = msg.from === currentUser.nickname;
+            const messageDiv = document.createElement('div');
+            
+            messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    <span class="nickname">${isOwn ? 'To: ' + msg.to : 'From: ' + msg.from}</span>
+                    <span class="timestamp">${msg.timestamp}</span>
+                </div>
+                <div class="message-bubble">${escapeHtml(msg.message)}</div>
+            `;
+            
+            privateMessages.appendChild(messageDiv);
+        });
+        privateMessages.scrollTop = privateMessages.scrollHeight;
+    }
+    
+    privateChatModal.classList.remove('hidden');
+    privateMessageInput.focus();
+}
+
+// Close private chat
+closePrivateChatBtn.addEventListener('click', () => {
+    privateChatModal.classList.add('hidden');
+    currentPrivateChatUser = null;
+});
+
+// Send private message
+sendPrivateMessageBtn.addEventListener('click', sendPrivateMessage);
+privateMessageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendPrivateMessage();
+    }
+});
+
+function sendPrivateMessage() {
+    const message = privateMessageInput.value.trim();
+    if (!message || !currentPrivateChatUser) return;
+
+    socket.emit('private-message', {
+        targetNickname: currentPrivateChatUser,
+        message: message
+    });
+    
+    privateMessageInput.value = '';
+}
+
+// Display private message
+function displayPrivateMessage(data) {
+    const isOwn = data.from === currentUser.nickname;
+    const otherUser = isOwn ? data.to : data.from;
+    
+    // Store message in history
+    if (!privateMessageHistory[otherUser]) {
+        privateMessageHistory[otherUser] = [];
+    }
+    privateMessageHistory[otherUser].push(data);
+    
+    // Update inbox
+    displayInbox();
+    
+    const messageDiv = document.createElement('div');
+    
+    messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
+    
+    messageDiv.innerHTML = `
+        <div class="message-header">
+            <span class="nickname">${isOwn ? 'To: ' + data.to : 'From: ' + data.from}</span>
+            <span class="timestamp">${data.timestamp}</span>
+        </div>
+        <div class="message-bubble">${escapeHtml(data.message)}</div>
+    `;
+    
+    privateMessages.appendChild(messageDiv);
+    privateMessages.scrollTop = privateMessages.scrollHeight;
+    
+    // If modal is closed and we receive a message, open it
+    if (privateChatModal.classList.contains('hidden')) {
+        openPrivateChat(otherUser);
+    }
+}
+
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Report user
+function reportUser(nickname) {
+    if (confirm(`Are you sure you want to report ${nickname} for abusive behavior?`)) {
+        socket.emit('report-user', { targetNickname: nickname });
+    }
+}
+
+// Close modal on outside click
+privateChatModal.addEventListener('click', (e) => {
+    if (e.target === privateChatModal) {
+        privateChatModal.classList.add('hidden');
+        currentPrivateChatUser = null;
+    }
+});
+
+// Mobile Navigation
+function switchMobileTab(tab) {
+    // Update nav tabs
+    navTabs.forEach(navTab => {
+        navTab.classList.remove('active');
+        if (navTab.dataset.tab === tab) {
+            navTab.classList.add('active');
+        }
+    });
+    
+    // Hide all views
+    chatView.classList.remove('active');
+    chatView.classList.add('hidden');
+    roomsView.classList.remove('active');
+    roomsView.classList.add('hidden');
+    usersView.classList.remove('active');
+    usersView.classList.add('hidden');
+    privateView.classList.remove('active');
+    privateView.classList.add('hidden');
+    
+    // Show selected view
+    switch(tab) {
+        case 'chat':
+            chatView.classList.remove('hidden');
+            chatView.classList.add('active');
+            break;
+        case 'rooms':
+            roomsView.classList.remove('hidden');
+            roomsView.classList.add('active');
+            break;
+        case 'users':
+            usersView.classList.remove('hidden');
+            usersView.classList.add('active');
+            break;
+        case 'private':
+            privateView.classList.remove('hidden');
+            privateView.classList.add('active');
+            displayMobileInbox();
+            break;
+    }
+}
+
+// Add event listeners to mobile nav tabs
+navTabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+        const tabName = tab.dataset.tab;
+        switchMobileTab(tabName);
+    });
+});
+
+// Header navigation event listeners
+freeChatRoomsBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Return to main chat view
+    switchMobileTab('chat');
+    // On desktop, ensure chat view is visible
+    chatView.classList.add('active');
+    roomsView.classList.remove('active');
+    usersView.classList.remove('active');
+});
+
+oneOnOneChatBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Open private messaging panel - show most recent private chat or list
+    const conversations = Object.keys(privateMessageHistory);
+    if (conversations.length > 0) {
+        // Open most recent conversation
+        openPrivateChat(conversations[conversations.length - 1]);
+    } else {
+        // Show private chat list tab to start a private chat
+        switchMobileTab('private');
+        // On desktop, scroll to inbox sidebar
+        const inboxSidebar = document.querySelector('.inbox-list');
+        if (inboxSidebar) {
+            inboxSidebar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+    }
+});
+
+chatRoomsBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Toggle/show rooms list
+    switchMobileTab('rooms');
+    // On desktop, scroll to rooms sidebar
+    const roomsSidebar = document.querySelector('.sidebar-left');
+    if (roomsSidebar) {
+        roomsSidebar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+});
+
+inboxBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Scroll to inbox section in sidebar
+    const inboxList = document.querySelector('.inbox-list');
+    if (inboxList) {
+        inboxList.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        // Add highlight effect
+        inboxList.style.transition = 'background-color 0.3s';
+        inboxList.style.backgroundColor = 'rgba(0, 145, 234, 0.1)';
+        setTimeout(() => {
+            inboxList.style.backgroundColor = '';
+        }, 1000);
+    }
+});
+
+profileBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    // Open profile modal
+    openProfileModal();
+});
+
+// Profile modal functions
+function openProfileModal() {
+    // Populate edit fields with current user data
+    document.getElementById('edit-nickname').value = currentUser.nickname;
+    
+    // Populate age dropdown
+    const editAgeSelect = document.getElementById('edit-age');
+    editAgeSelect.innerHTML = '';
+    for (let i = 18; i <= 99; i++) {
+        const option = document.createElement('option');
+        option.value = i;
+        option.textContent = i;
+        if (i == currentUser.age) {
+            option.selected = true;
+        }
+        editAgeSelect.appendChild(option);
+    }
+    
+    // Set gender radio
+    const genderRadios = document.getElementsByName('edit-gender');
+    for (const radio of genderRadios) {
+        if (radio.value === currentUser.gender) {
+            radio.checked = true;
+        }
+    }
+    
+    // Set country
+    document.getElementById('edit-country').value = currentUser.country;
+    
+    // Set state
+    document.getElementById('edit-state').value = currentUser.state;
+    
+    // Set avatar initials
+    const initials = currentUser.nickname.substring(0, 2).toUpperCase();
+    document.getElementById('profile-avatar-circle').textContent = initials;
+    
+    // Show modal
+    profileModal.classList.remove('hidden');
+}
+
+closeProfileBtn.addEventListener('click', () => {
+    profileModal.classList.add('hidden');
+});
+
+updateProfileBtn.addEventListener('click', () => {
+    // Get updated values
+    const newAge = document.getElementById('edit-age').value;
+    const newGender = getSelectedEditGender();
+    const newCountry = document.getElementById('edit-country').value;
+    const newState = document.getElementById('edit-state').value.trim();
+    
+    // Validate
+    if (!newAge || !newGender || !newCountry || !newState) {
+        alert('Please fill in all fields');
+        return;
+    }
+    
+    if (newAge < 18) {
+        alert('You must be 18 or older');
+        return;
+    }
+    
+    // Update current user
+    currentUser.age = newAge;
+    currentUser.gender = newGender;
+    currentUser.country = newCountry;
+    currentUser.state = newState;
+    
+    // Update socket with new info
+    if (socket) {
+        socket.emit('update-user', currentUser);
+    }
+    
+    // Update UI
+    welcomeMessage.textContent = `Welcome to ${newState} Chat Room`;
+    displayRooms();
+    
+    // Close modal
+    profileModal.classList.add('hidden');
+    
+    // Show success message
+    displaySystemMessage('Profile updated successfully!');
+});
+
+// Get selected gender from edit radio buttons
+function getSelectedEditGender() {
+    const genderRadios = document.getElementsByName('edit-gender');
+    for (const radio of genderRadios) {
+        if (radio.checked) {
+            return radio.value;
+        }
+    }
+    return '';
+}
+
+// Close profile modal on outside click
+profileModal.addEventListener('click', (e) => {
+    if (e.target === profileModal) {
+        profileModal.classList.add('hidden');
+    }
+});
+
+// Initialize on page load
+populateAgeDropdown();
+
+// Hamburger menu toggle
+hamburgerMenu.addEventListener('click', () => {
+    hamburgerMenu.classList.toggle('active');
+    mobileNavMenu.classList.toggle('active');
+    backdropOverlay.classList.toggle('active');
+});
+
+// Close mobile menu
+mobileMenuClose.addEventListener('click', () => {
+    hamburgerMenu.classList.remove('active');
+    mobileNavMenu.classList.remove('active');
+    backdropOverlay.classList.remove('active');
+});
+
+// Close mobile menu when clicking backdrop
+backdropOverlay.addEventListener('click', () => {
+    hamburgerMenu.classList.remove('active');
+    mobileNavMenu.classList.remove('active');
+    backdropOverlay.classList.remove('active');
+});
+
+// Mobile navigation menu clicks
+document.getElementById('mobile-free-chat-rooms').addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMobileMenu();
+    switchMobileTab('chat');
+});
+
+document.getElementById('mobile-one-on-one-chat').addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMobileMenu();
+    // Open most recent private chat or show private chat list
+    const conversations = Object.keys(privateMessageHistory);
+    if (conversations.length > 0) {
+        openPrivateChat(conversations[conversations.length - 1]);
+    } else {
+        switchMobileTab('private');
+    }
+});
+
+document.getElementById('mobile-profile').addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMobileMenu();
+    profileModal.classList.remove('hidden');
+});
+
+document.getElementById('mobile-leave-chat').addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMobileMenu();
+    // Trigger leave chat functionality
+    leaveChatBtn.click();
+});
+
+// Helper function to close mobile menu
+function closeMobileMenu() {
+    hamburgerMenu.classList.remove('active');
+    mobileNavMenu.classList.remove('active');
+    backdropOverlay.classList.remove('active');
+}
+
+// Initialize mobile view on page load
+if (window.innerWidth <= 768) {
+    switchMobileTab('chat');
+}
+
+// Handle window resize
+window.addEventListener('resize', () => {
+    if (window.innerWidth <= 768) {
+        // Mobile: show appropriate view
+        if (!chatView.classList.contains('active') && 
+            !roomsView.classList.contains('active') && 
+            !usersView.classList.contains('active') &&
+            !privateView.classList.contains('active')) {
+            switchMobileTab('chat');
+        }
+    } else {
+        // Desktop: remove mobile view classes
+        chatView.classList.remove('active');
+        roomsView.classList.remove('active');
+        usersView.classList.remove('active');
+        privateView.classList.remove('active');
+    }
+});

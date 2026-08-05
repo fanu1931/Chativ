@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Chativ - Free Chat Rooms, Chat Online With No Registration</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Landing Page -->
+    <div id="landing-page" class="landing-page">
+        <!-- Top Header -->
+        <header class="landing-header">
+            <div class="logo">Chativ</div>
+            <nav class="landing-nav">
+                <a href="#">Free chat rooms</a>
+                <a href="#">1 On 1 Chat</a>
+                <a href="#">Chat Rooms</a>
+            </nav>
+        </header>
+
+        <!-- 3-Column Layout -->
+        <div class="landing-container">
+            <!-- Left Column - Info -->
+            <div class="landing-left">
+                <h1>Free Chat Rooms, Chat Online With No Registration</h1>
+                <p class="landing-description">
+                    Welcome to Chativ! Join thousands of people from around the world in our free chat rooms. 
+                    Meet new friends, share your thoughts, and have fun conversations without any registration. 
+                    Our chat rooms are safe, secure, and completely free to use.
+                </p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>No registration required</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>100% free chat rooms</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Meet people from around the world</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">✓</span>
+                        <span>Safe and secure environment</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Middle Column - Form -->
+            <div class="landing-middle">
+                <div class="form-card">
+                    <h2>Chat Without Registration</h2>
+                    <div class="entry-form">
+                        <div class="form-group">
+                            <label for="nickname">Nickname</label>
+                            <input type="text" id="nickname" placeholder="Enter your nickname" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label>Gender</label>
+                            <div class="gender-selector">
+                                <label class="gender-option">
+                                    <input type="radio" name="gender" value="Male" required>
+                                    <span class="gender-icon">👨</span>
+                                    <span>Male</span>
+                                </label>
+                                <label class="gender-option">
+                                    <input type="radio" name="gender" value="Female">
+                                    <span class="gender-icon">👩</span>
+                                    <span>Female</span>
+                                </label>
+                                <label class="gender-option">
+                                    <input type="radio" name="gender" value="Other">
+                                    <span class="gender-icon">🧑</span>
+                                    <span>Other</span>
+                                </label>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <select id="age" required>
+                                <option value="">Select Age (18+)</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="country">Country</label>
+                            <select id="country" required>
+                                <option value="">Select Country</option>
+                                <option value="India">India</option>
+                                <option value="United States">United States</option>
+                                <option value="United Kingdom">United Kingdom</option>
+                                <option value="Canada">Canada</option>
+                                <option value="Australia">Australia</option>
+                                <option value="Germany">Germany</option>
+                                <option value="France">France</option>
+                                <option value="Other">Other</option>
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="state">State/Region</label>
+                            <input type="text" id="state" list="state-suggestions" placeholder="Type or select your state/region" required>
+                            <datalist id="state-suggestions">
+                                <option value="Maharashtra">
+                                <option value="Delhi">
+                                <option value="Gujarat">
+                                <option value="Uttar Pradesh">
+                                <option value="Bihar">
+                                <option value="Karnataka">
+                                <option value="Tamil Nadu">
+                                <option value="Madhya Pradesh">
+                                <option value="Rajasthan">
+                                <option value="West Bengal">
+                                <option value="Andhra Pradesh">
+                                <option value="Telangana">
+                                <option value="Kerala">
+                                <option value="Punjab">
+                                <option value="Haryana">
+                                <option value="Odisha">
+                                <option value="Jharkhand">
+                                <option value="Chhattisgarh">
+                                <option value="Uttarakhand">
+                                <option value="Himachal Pradesh">
+                                <option value="Jammu and Kashmir">
+                                <option value="Goa">
+                                <option value="Assam">
+                                <option value="Meghalaya">
+                                <option value="Manipur">
+                                <option value="Nagaland">
+                                <option value="Tripura">
+                                <option value="Mizoram">
+                                <option value="Arunachal Pradesh">
+                                <option value="Sikkim">
+                            </datalist>
+                        </div>
+                        
+                        <button id="enter-chat" class="btn-primary">START CHAT NOW</button>
+                    </div>
+                    
+                    <p class="terms">Must be 18+ to join. By entering, you agree to our terms of service.</p>
+                </div>
+            </div>
+
+            <!-- Right Column - Tips/Ads -->
+            <div class="landing-right">
+                <div class="tips-card">
+                    <h3>Online Chat Tips</h3>
+                    <ul class="tips-list">
+                        <li>Be respectful to other users</li>
+                        <li>Don't share personal information</li>
+                        <li>Report inappropriate behavior</li>
+                        <li>Have fun and make new friends</li>
+                        <li>Follow community guidelines</li>
+                    </ul>
+                </div>
+                <div class="ad-slot-sidebar">
+                    <div class="ad-placeholder">
+                        <span>Advertisement</span>
+                        <p>300x250</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Room Page -->
+    <div id="chat-page" class="chat-page hidden">
+        <!-- Top Navigation Header -->
+        <header class="chat-top-nav">
+            <div class="header-left">
+                <div class="logo">Chativ</div>
+                <button class="hamburger-menu" id="hamburger-menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+            <nav class="chat-nav-links" id="chat-nav-links">
+                <a href="#" id="free-chat-rooms">Free chat rooms</a>
+                <a href="#" id="one-on-one-chat">1 On 1 Chat</a>
+                <a href="#" id="chat-rooms">Chat Rooms</a>
+                <a href="#" id="inbox">Inbox</a>
+                <a href="#" id="profile">Profile</a>
+                <span class="current-user" id="nav-username"></span>
+            </nav>
+        </header>
+        
+        <!-- Mobile Navigation Menu -->
+        <div class="mobile-nav-menu" id="mobile-nav-menu">
+            <div class="mobile-menu-header">
+                <h3>Menu</h3>
+                <button class="mobile-menu-close" id="mobile-menu-close">&times;</button>
+            </div>
+            <a href="#" id="mobile-free-chat-rooms">Free Chat Rooms</a>
+            <a href="#" id="mobile-one-on-one-chat">1 On 1 Chat</a>
+            <a href="#" id="mobile-profile">Profile</a>
+            <a href="#" id="mobile-leave-chat" class="leave-chat-link">Leave Chat</a>
+        </div>
+        
+        <!-- Backdrop Overlay -->
+        <div class="backdrop-overlay" id="backdrop-overlay"></div>
+
+        <!-- Sub-header -->
+        <div class="chat-sub-header">
+            <div class="welcome-message">
+                <span id="welcome-message">Welcome to Chativ!</span>
+            </div>
+            <button id="leave-chat" class="btn-leave">Leave Chat</button>
+        </div>
+
+        <!-- Safety Warning Banner -->
+        <div class="safety-banner">
+            ⚠️ <strong>Warning:</strong> Never share personal details, phone numbers, or money with anyone on Chativ. Respect all users. Abusive behavior will lead to an instant ban.
+        </div>
+
+        <div class="chat-container">
+            <!-- Left Sidebar - Info -->
+            <aside class="sidebar-left">
+                <div class="ad-slot ad-top">
+                    <div class="ad-placeholder">
+                        <span>Advertisement</span>
+                        <p>Google AdSense - 160x600</p>
+                    </div>
+                </div>
+                
+                <div class="rooms-list">
+                    <h3>Your State Room</h3>
+                    <ul id="rooms-container">
+                        <!-- State room will be displayed here -->
+                    </ul>
+                </div>
+                
+                <div class="inbox-list">
+                    <h3>Inbox</h3>
+                    <ul id="inbox-container">
+                        <li class="inbox-empty">No private messages yet</li>
+                    </ul>
+                </div>
+                
+                <div class="ad-slot ad-bottom">
+                    <div class="ad-placeholder">
+                        <span>Advertisement</span>
+                        <p>Google AdSense - 160x600</p>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Center - Chat Area -->
+            <main class="chat-main" id="chat-view">
+                <div id="messages-container" class="messages-container">
+                    <!-- Messages will be populated by JS -->
+                </div>
+                
+                <div class="input-area">
+                    <input type="text" id="message-input" placeholder="Type your message..." autocomplete="off">
+                    <button id="send-message" class="btn-send">Send</button>
+                </div>
+            </main>
+
+            <!-- Mobile Rooms View -->
+            <main class="chat-main mobile-view hidden" id="rooms-view">
+                <div class="mobile-rooms-list">
+                    <h3>Your State Room</h3>
+                    <ul id="mobile-rooms-container">
+                        <!-- State room will be populated by JS -->
+                    </ul>
+                </div>
+            </main>
+
+            <!-- Mobile Users View -->
+            <main class="chat-main mobile-view hidden" id="users-view">
+                <div class="mobile-users-list">
+                    <h3>Online Users</h3>
+                    <ul id="mobile-users-list">
+                        <!-- Users will be populated by JS -->
+                    </ul>
+                </div>
+            </main>
+
+            <!-- Mobile Private Chat View -->
+            <main class="chat-main mobile-view hidden" id="private-view">
+                <div class="mobile-inbox-list">
+                    <h3>1 on 1 Chat</h3>
+                    <ul id="mobile-inbox-container">
+                        <li class="inbox-empty">No private messages yet</li>
+                    </ul>
+                </div>
+            </main>
+
+            <!-- Right Sidebar - Online Users -->
+            <aside class="sidebar-right">
+                <div class="online-users">
+                    <h3>Online Users</h3>
+                    <ul id="users-list">
+                        <!-- Users will be populated by JS -->
+                    </ul>
+                </div>
+            </aside>
+        </div>
+
+        <!-- Mobile Bottom Navigation -->
+        <nav class="mobile-nav">
+            <button class="nav-tab" data-tab="users">
+                <span class="nav-icon">👥</span>
+                <span class="nav-label">Users</span>
+            </button>
+            <button class="nav-tab" data-tab="private">
+                <span class="nav-icon">💬</span>
+                <span class="nav-label">1 on 1 Chat</span>
+            </button>
+            <button class="nav-tab active" data-tab="chat">
+                <span class="nav-icon">🗨️</span>
+                <span class="nav-label">Chat</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- Private Chat Modal -->
+    <div id="private-chat-modal" class="private-chat-modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="private-chat-title">Private Chat</h3>
+                <button id="close-private-chat" class="btn-close">&times;</button>
+            </div>
+            <div id="private-messages" class="private-messages">
+                <!-- Private messages will be populated here -->
+            </div>
+            <div class="private-input-area">
+                <input type="text" id="private-message-input" placeholder="Type private message..." autocomplete="off">
+                <button id="send-private-message" class="btn-send">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Profile Modal -->
+    <div id="profile-modal" class="profile-modal hidden">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>My Profile</h3>
+                <button id="close-profile" class="btn-close">&times;</button>
+            </div>
+            <div class="profile-body">
+                <div class="profile-avatar">
+                    <div class="avatar-circle" id="profile-avatar-circle"></div>
+                </div>
+                <div class="profile-info">
+                    <div class="profile-field">
+                        <label>Nickname:</label>
+                        <input type="text" id="edit-nickname" readonly>
+                    </div>
+                    <div class="profile-field">
+                        <label>Age:</label>
+                        <select id="edit-age">
+                            <!-- Options will be populated by JS -->
+                        </select>
+                    </div>
+                    <div class="profile-field">
+                        <label>Gender:</label>
+                        <div class="gender-selector">
+                            <label class="gender-option">
+                                <input type="radio" name="edit-gender" value="Male">
+                                <span class="gender-icon">👨</span>
+                                <span>Male</span>
+                            </label>
+                            <label class="gender-option">
+                                <input type="radio" name="edit-gender" value="Female">
+                                <span class="gender-icon">👩</span>
+                                <span>Female</span>
+                            </label>
+                            <label class="gender-option">
+                                <input type="radio" name="edit-gender" value="Other">
+                                <span class="gender-icon">🧑</span>
+                                <span>Other</span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="profile-field">
+                        <label>Country:</label>
+                        <select id="edit-country">
+                            <option value="India">India</option>
+                            <option value="United States">United States</option>
+                            <option value="United Kingdom">United Kingdom</option>
+                            <option value="Canada">Canada</option>
+                            <option value="Australia">Australia</option>
+                            <option value="Germany">Germany</option>
+                            <option value="France">France</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                    <div class="profile-field">
+                        <label>State/Region:</label>
+                        <input type="text" id="edit-state" list="state-suggestions">
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button id="update-profile" class="btn-primary">Update Profile</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
