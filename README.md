@@ -1,6 +1,6 @@
-# Chativ Clone - Real-time Chat Application
+# Chatic Clone - Real-time Chat Application
 
-A Chativ-style chat application with Socket.io, featuring state-based rooms, private messaging, and safety features.
+A Chatic-style chat application with Socket.io, featuring state-based rooms, private messaging, and safety features.
 
 ## Features
 
