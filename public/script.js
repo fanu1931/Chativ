@@ -52,6 +52,12 @@ const profileModal = document.getElementById('profile-modal');
 const closeProfileBtn = document.getElementById('close-profile');
 const updateProfileBtn = document.getElementById('update-profile');
 
+// Legal modal elements
+const legalModal = document.getElementById('legal-modal');
+const modalTitle = document.getElementById('modal-title');
+const modalBody = document.getElementById('modal-body');
+const modalClose = document.getElementById('modal-close');
+
 // User data
 let currentUser = {
     nickname: '',
@@ -824,24 +830,15 @@ window.addEventListener('resize', () => {
     }
 });
 
-// Legal Modal Functionality
-const legalModal = document.getElementById('legal-modal');
-const modalTitle = document.getElementById('modal-title');
-const modalBody = document.getElementById('modal-body');
-const modalClose = document.getElementById('modal-close');
-
 // Legal content
 const legalContent = {
     terms: {
         title: 'Terms of Use',
         content: `
-            <h3>1. Acceptance of Terms</h3>
-            <p>By accessing and using Chatic, you accept and agree to be bound by the terms and provisions of this agreement. If you do not agree to abide by these terms, please do not use this service.</p>
+            <h3>1. Age Restriction</h3>
+            <p>You must be 18 years of age or older to use this service. By using Chatic, you represent and warrant that you are at least 18 years of age. Access to this service by minors is strictly prohibited.</p>
             
-            <h3>2. Age Requirement</h3>
-            <p>You must be 18 years of age or older to use this service. By using Chatic, you represent and warrant that you are at least 18 years of age.</p>
-            
-            <h3>3. User Conduct</h3>
+            <h3>2. User Conduct</h3>
             <p>Users agree to use this service in a responsible and respectful manner. Prohibited activities include:</p>
             <ul>
                 <li>Harassment, threats, or abusive behavior</li>
@@ -850,6 +847,9 @@ const legalContent = {
                 <li>Illegal activities or content</li>
                 <li>Impersonation of others</li>
             </ul>
+            
+            <h3>3. Zero Tolerance for Abuse</h3>
+            <p>Chatic maintains a zero tolerance policy for abusive behavior. Any user found engaging in harassment, threats, or other forms of abuse will be immediately banned from the service without warning.</p>
             
             <h3>4. Privacy</h3>
             <p>Your privacy is important to us. Please review our Privacy Policy to understand how we collect, use, and protect your information.</p>
@@ -867,8 +867,11 @@ const legalContent = {
     privacy: {
         title: 'Privacy Policy',
         content: `
-            <h3>1. Information Collection</h3>
-            <p>Chatic collects the following information:</p>
+            <h3>No Personal Chat Storage</h3>
+            <p>Chatic does not store personal chat conversations. Messages are transmitted in real-time and are not permanently retained on our servers. Your privacy is our priority.</p>
+            
+            <h3>Information Collection</h3>
+            <p>Chatic collects minimal information for service functionality:</p>
             <ul>
                 <li>Nickname (chosen by you)</li>
                 <li>Age (required for age verification)</li>
@@ -876,47 +879,43 @@ const legalContent = {
                 <li>Country and State/Region (for matching)</li>
             </ul>
             
-            <h3>2. Information Usage</h3>
+            <h3>Information Usage</h3>
             <p>We use your information to:</p>
             <ul>
-                <li>Provide and improve our chat services</li>
+                <li>Provide chat matching services</li>
                 <li>Match you with other users in your region</li>
                 <li>Ensure safety and compliance with age requirements</li>
                 <li>Prevent abuse and violations of our terms</li>
             </ul>
             
-            <h3>3. Data Protection</h3>
-            <p>We implement reasonable security measures to protect your information. However, no method of transmission over the internet is completely secure.</p>
+            <h3>Standard Web Safety</h3>
+            <p>We implement reasonable security measures to protect your information. However, no method of transmission over the internet is completely secure. Please follow standard web safety practices.</p>
             
-            <h3>4. Information Sharing</h3>
+            <h3>Information Sharing</h3>
             <p>We do not sell, trade, or rent your personal information to third parties. Your information may be disclosed if required by law or to protect our rights.</p>
             
-            <h3>5. Chat Content</h3>
-            <p>Chat conversations are not permanently stored. Messages are transmitted in real-time and are not retained by our servers.</p>
-            
-            <h3>6. Cookies</h3>
-            <p>We may use cookies to enhance your experience. You can disable cookies in your browser settings.</p>
-            
-            <h3>7. Your Rights</h3>
+            <h3>Your Rights</h3>
             <p>You have the right to request access to, correction of, or deletion of your personal information.</p>
             
-            <h3>8. Children's Privacy</h3>
+            <h3>Children's Privacy</h3>
             <p>Our service is not intended for children under 18. We do not knowingly collect personal information from minors.</p>
         `
     },
     safety: {
         title: 'Safety Tips',
         content: `
-            <h3>1. Protect Your Identity</h3>
-            <p>Never share personal information such as:</p>
+            <h3>Never Share Personal Information</h3>
+            <p>For your safety, never share the following with anyone on Chatic:</p>
             <ul>
-                <li>Real name, address, or phone number</li>
-                <li>Email address or social media profiles</li>
-                <li>Financial information or passwords</li>
-                <li>Workplace or school information</li>
+                <li>Phone numbers</li>
+                <li>Social media profiles or handles</li>
+                <li>Money or financial information</li>
+                <li>Real name, address, or location</li>
+                <li>Email addresses</li>
+                <li>Passwords or login credentials</li>
             </ul>
             
-            <h3>2. Be Skeptical</h3>
+            <h3>Be Cautious</h3>
             <p>Not everyone is who they claim to be. Be cautious of individuals who:</p>
             <ul>
                 <li>Ask for money or financial assistance</li>
@@ -925,33 +924,24 @@ const legalContent = {
                 <li>Make unrealistic promises or claims</li>
             </ul>
             
-            <h3>3. Trust Your Instincts</h3>
+            <h3>Trust Your Instincts</h3>
             <p>If something feels wrong or uncomfortable, end the conversation immediately. You can leave the chat at any time.</p>
             
-            <h3>4. Report Issues</h3>
+            <h3>Report Issues</h3>
             <p>If you encounter inappropriate behavior, harassment, or suspicious activity, report it immediately. Use the leave chat button if you feel unsafe.</p>
             
-            <h3>5. Meet Safely</h3>
-            <p>If you choose to meet someone in person:</p>
-            <ul>
-                <li>Meet in a public place</li>
-                <li>Tell a friend or family member about your plans</li>
-                <li>Arrange your own transportation</li>
-                <li>Never share your home address</li>
-            </ul>
-            
-            <h3>6. Screen Capture Concerns</h3>
-            <p>Be aware that other users may take screenshots or record conversations. Never share anything you wouldn't want made public.</p>
-            
-            <h3>7. Block and Ignore</h3>
-            <p>Don't engage with trolls or harassers. Simply leave the chat and move on to a new conversation.</p>
+            <h3>Stay Safe</h3>
+            <p>Remember that Chatic is an anonymous chat service. Protect your identity by never sharing personal details that could compromise your safety.</p>
         `
     },
     about: {
         title: 'About Us',
         content: `
+            <h3>What is Chatic?</h3>
+            <p>Chatic is a free anonymous online chat service that connects people from around the world in real-time conversations.</p>
+            
             <h3>Our Mission</h3>
-            <p>Chatic is dedicated to providing a free, safe, and friendly platform for people around the world to connect and communicate. We believe in the power of conversation to build understanding and friendships across borders.</p>
+            <p>We provide a safe, friendly platform for people to connect, make friends, and have meaningful conversations without the need for registration or personal information.</p>
             
             <h3>What We Offer</h3>
             <ul>
@@ -972,39 +962,22 @@ const legalContent = {
             
             <h3>Technology</h3>
             <p>Chatic uses modern web technologies including Socket.io for real-time messaging, ensuring fast and reliable communication between users.</p>
-            
-            <h3>Contact Us</h3>
-            <p>Have questions or feedback? We'd love to hear from you. Please use our Contact page to reach out.</p>
         `
     },
     contact: {
         title: 'Contact Us',
         content: `
             <h3>Get in Touch</h3>
-            <p>We value your feedback and are here to help. Please choose the best way to reach us:</p>
+            <p>We value your feedback and are here to help. Please contact us at:</p>
             
-            <h3>General Inquiries</h3>
-            <p>For general questions, suggestions, or feedback about our service, please contact us at:</p>
-            <p><strong>Email:</strong> support@chatic.com</p>
-            
-            <h3>Report an Issue</h3>
-            <p>If you need to report inappropriate behavior, technical issues, or policy violations:</p>
-            <p><strong>Email:</strong> reports@chatic.com</p>
-            
-            <h3>Business Inquiries</h3>
-            <p>For partnership opportunities, advertising, or business-related questions:</p>
-            <p><strong>Email:</strong> business@chatic.com</p>
+            <h3>Email Support</h3>
+            <p><strong>Email:</strong> support@chatic.online</p>
             
             <h3>Response Time</h3>
             <p>We typically respond to inquiries within 24-48 hours during business days. For urgent safety concerns, please flag them immediately in your report.</p>
             
-            <h3>Follow Us</h3>
-            <p>Stay updated with Chatic by following us on social media:</p>
-            <ul>
-                <li>Twitter: @ChaticChat</li>
-                <li>Facebook: Chatic Official</li>
-                <li>Instagram: @chatic_official</li>
-            </ul>
+            <h3>Feedback</h3>
+            <p>We welcome your feedback and suggestions to improve our service. Please let us know how we can make Chatic better for you.</p>
         `
     }
 };
@@ -1036,18 +1009,22 @@ document.querySelectorAll('[data-modal]').forEach(link => {
 });
 
 // Close modal on X button
-modalClose.addEventListener('click', closeModal);
+if (modalClose) {
+    modalClose.addEventListener('click', closeModal);
+}
 
 // Close modal on outside click
-legalModal.addEventListener('click', (e) => {
-    if (e.target === legalModal) {
-        closeModal();
-    }
-});
+if (legalModal) {
+    legalModal.addEventListener('click', (e) => {
+        if (e.target === legalModal) {
+            closeModal();
+        }
+    });
+}
 
 // Close modal on Escape key
 document.addEventListener('keydown', (e) => {
-    if (e.key === 'Escape' && legalModal.classList.contains('active')) {
+    if (e.key === 'Escape' && legalModal && legalModal.classList.contains('active')) {
         closeModal();
     }
 });
