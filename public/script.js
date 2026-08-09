@@ -103,17 +103,6 @@ function initSocket() {
     });
 }
 
-// Populate age dropdown (18-99)
-function populateAgeDropdown() {
-    const ageSelect = document.getElementById('age');
-    for (let i = 18; i <= 99; i++) {
-        const option = document.createElement('option');
-        option.value = i;
-        option.textContent = i;
-        ageSelect.appendChild(option);
-    }
-}
-
 // Get selected gender from radio buttons
 function getSelectedGender() {
     const genderRadios = document.getElementsByName('gender');
@@ -776,7 +765,6 @@ profileModal.addEventListener('click', (e) => {
 });
 
 // Initialize on page load
-populateAgeDropdown();
 
 // Load saved state from localStorage
 const savedState = localStorage.getItem('userState');
