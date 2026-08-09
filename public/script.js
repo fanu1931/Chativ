@@ -131,7 +131,7 @@ enterChatBtn.addEventListener('click', () => {
     const age = ageInput.value;
     const gender = getSelectedGender();
     const country = countryInput.value;
-    const state = stateInput.value;
+    const state = stateInput.value.trim();
 
     if (!nickname || !age || !gender || !country || !state) {
         alert('Please fill in all fields');
@@ -144,6 +144,9 @@ enterChatBtn.addEventListener('click', () => {
     }
 
     currentUser = { nickname, age, gender, country, state };
+
+    // Save state to localStorage
+    localStorage.setItem('userState', state);
 
     // Initialize socket and join
     initSocket();
@@ -326,18 +329,30 @@ function displayMobileInbox() {
 
 // Display online users
 function displayUsers(users) {
+    // Sort users: same state first, then others
+    const sortedUsers = [...users].sort((a, b) => {
+        if (a.state === currentUser.state && b.state !== currentUser.state) {
+            return -1;
+        }
+        if (a.state !== currentUser.state && b.state === currentUser.state) {
+            return 1;
+        }
+        return 0;
+    });
+
     // Desktop sidebar
     usersList.innerHTML = '';
-    users.forEach(user => {
+    sortedUsers.forEach(user => {
         const li = document.createElement('li');
         
         const initials = user.nickname.substring(0, 2).toUpperCase();
         const countryFlag = getCountryFlag(user.country);
+        const isSameState = user.state === currentUser.state;
         
         li.innerHTML = `
-            <div class="user-avatar">${initials}</div>
+            <div class="user-avatar ${isSameState ? 'same-state' : ''}">${initials}</div>
             <div class="user-info-text">
-                <div class="user-name">${escapeHtml(user.nickname)}</div>
+                <div class="user-name">${escapeHtml(user.nickname)} ${isSameState ? '<span class="nearby-badge">Nearby</span>' : ''}</div>
                 <div class="user-details">${user.age} • ${user.gender} • ${countryFlag} ${user.state}</div>
             </div>
             <div class="online-status"></div>
@@ -365,16 +380,17 @@ function displayUsers(users) {
     
     // Mobile view
     mobileUsersList.innerHTML = '';
-    users.forEach(user => {
+    sortedUsers.forEach(user => {
         const li = document.createElement('li');
         
         const initials = user.nickname.substring(0, 2).toUpperCase();
         const countryFlag = getCountryFlag(user.country);
+        const isSameState = user.state === currentUser.state;
         
         li.innerHTML = `
-            <div class="user-avatar">${initials}</div>
+            <div class="user-avatar ${isSameState ? 'same-state' : ''}">${initials}</div>
             <div class="user-info-text">
-                <div class="user-name">${escapeHtml(user.nickname)}</div>
+                <div class="user-name">${escapeHtml(user.nickname)} ${isSameState ? '<span class="nearby-badge">Nearby</span>' : ''}</div>
                 <div class="user-details">${user.age} • ${user.gender} • ${countryFlag} ${user.state}</div>
             </div>
             <div class="online-status"></div>
@@ -761,6 +777,12 @@ profileModal.addEventListener('click', (e) => {
 
 // Initialize on page load
 populateAgeDropdown();
+
+// Load saved state from localStorage
+const savedState = localStorage.getItem('userState');
+if (savedState) {
+    stateInput.value = savedState;
+}
 
 // Hamburger menu toggle
 hamburgerMenu.addEventListener('click', () => {

@@ -29,44 +29,51 @@ body {
 
 /* Landing Page Header */
 .landing-header {
-    background: var(--white);
-    padding: 15px 30px;
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
+    padding: 18px 40px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 145, 234, 0.2);
     position: sticky;
     top: 0;
     z-index: 100;
 }
 
 .landing-header .logo {
-    font-size: 28px;
-    font-weight: bold;
-    color: var(--primary-blue);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.5px;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .landing-nav {
     display: flex;
-    gap: 25px;
+    gap: 30px;
 }
 
 .landing-nav a {
-    color: var(--text-dark);
+    color: var(--white);
     text-decoration: none;
-    font-size: 14px;
-    transition: color 0.3s;
+    font-size: 15px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    padding: 8px 16px;
+    border-radius: 6px;
 }
 
 .landing-nav a:hover {
-    color: var(--primary-blue);
+    background: rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
 /* Landing Page Styles */
 .landing-page {
-    background: var(--gray-light);
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
     min-height: 100vh;
-    padding: 30px 20px;
+    padding: 40px 20px;
 }
 
 .landing-container {
@@ -80,17 +87,19 @@ body {
 
 /* Left Column - Info */
 .landing-left {
-    background: var(--white);
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
 }
 
 .landing-left h1 {
     color: var(--primary-blue);
-    font-size: 28px;
-    margin-bottom: 20px;
+    font-size: 30px;
+    margin-bottom: 22px;
     line-height: 1.3;
+    font-weight: 700;
 }
 
 .landing-description {
@@ -128,16 +137,18 @@ body {
 
 .form-card {
     background: var(--white);
-    padding: 30px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    padding: 35px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
 }
 
 .form-card h2 {
     color: var(--primary-blue);
-    font-size: 24px;
-    margin-bottom: 25px;
+    font-size: 26px;
+    margin-bottom: 28px;
     text-align: center;
+    font-weight: 700;
 }
 
 .entry-form {
@@ -160,19 +171,22 @@ body {
 
 .form-group input,
 .form-group select {
-    padding: 14px;
+    padding: 16px;
     border: 2px solid var(--gray-medium);
-    border-radius: 6px;
+    border-radius: 10px;
     font-size: 15px;
-    transition: border-color 0.3s;
+    transition: all 0.3s ease;
     -webkit-appearance: none;
     appearance: none;
+    background: #fafafa;
 }
 
 .form-group input:focus,
 .form-group select:focus {
     outline: none;
     border-color: var(--primary-blue);
+    background: var(--white);
+    box-shadow: 0 0 0 4px rgba(0, 145, 234, 0.1);
 }
 
 /* Gender Selector */
@@ -223,50 +237,63 @@ body {
 }
 
 .btn-primary {
-    background: var(--primary-blue);
+    background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%);
     color: white;
-    padding: 16px;
+    padding: 18px;
     border: none;
-    border-radius: 6px;
-    font-size: 16px;
+    border-radius: 12px;
+    font-size: 17px;
     font-weight: 600;
     cursor: pointer;
     transition: all 0.3s ease;
-    min-height: 50px;
+    min-height: 54px;
     -webkit-tap-highlight-color: transparent;
-    box-shadow: 0 4px 6px rgba(0, 145, 234, 0.3);
+    box-shadow: 0 6px 20px rgba(0, 145, 234, 0.4);
+    letter-spacing: 0.5px;
 }
 
 .btn-primary:hover {
-    background: var(--dark-blue);
-    transform: translateY(-2px);
-    box-shadow: 0 6px 12px rgba(0, 145, 234, 0.4);
+    background: linear-gradient(135deg, var(--dark-blue) 0%, var(--primary-blue) 100%);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0, 145, 234, 0.5);
 }
 
 .btn-primary:active {
-    transform: translateY(0);
-    box-shadow: 0 2px 4px rgba(0, 145, 234, 0.3);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 145, 234, 0.3);
 }
 
-.terms {
+.legal-disclaimer {
     text-align: center;
     color: var(--text-light);
     font-size: 12px;
     margin-top: 15px;
+    line-height: 1.5;
+}
+
+.legal-disclaimer a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.legal-disclaimer a:hover {
+    text-decoration: underline;
 }
 
 /* Right Column - Tips/Ads */
 .landing-right {
     display: flex;
     flex-direction: column;
-    gap: 20px;
+    gap: 25px;
 }
 
 .tips-card {
-    background: var(--white);
-    padding: 25px;
-    border-radius: 8px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.95);
+    padding: 30px;
+    border-radius: 16px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+    backdrop-filter: blur(10px);
 }
 
 .tips-card h3 {
@@ -1112,6 +1139,23 @@ body {
     font-weight: 600;
     font-size: 0.95em;
     box-shadow: 0 2px 8px rgba(0, 145, 234, 0.3);
+}
+
+.user-avatar.same-state {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    box-shadow: 0 2px 8px rgba(46, 204, 113, 0.4);
+}
+
+.nearby-badge {
+    background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+    color: white;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-left: 8px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
 .user-info-text {
