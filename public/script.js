@@ -487,6 +487,9 @@ function displayPrivateMessage(data) {
     // Update inbox
     displayInbox();
     
+    // Update inbox notification badge
+    updateInboxBadge();
+    
     const messageDiv = document.createElement('div');
     
     messageDiv.className = `message ${isOwn ? 'own' : 'other'}`;
@@ -505,6 +508,19 @@ function displayPrivateMessage(data) {
     // If modal is closed and we receive a message, open it
     if (privateChatModal.classList.contains('hidden')) {
         openPrivateChat(otherUser);
+    }
+}
+
+// Update inbox notification badge
+function updateInboxBadge() {
+    const inboxBadge = document.getElementById('inbox-badge');
+    const conversationCount = Object.keys(privateMessageHistory).length;
+    
+    if (conversationCount > 0) {
+        inboxBadge.textContent = conversationCount;
+        inboxBadge.classList.add('active');
+    } else {
+        inboxBadge.classList.remove('active');
     }
 }
 
