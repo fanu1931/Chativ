@@ -179,6 +179,16 @@ body {
     -webkit-appearance: none;
     appearance: none;
     background: #fafafa;
+    color: #000000;
+}
+
+.form-group select {
+    background-color: #ffffff;
+}
+
+.form-group select option {
+    color: #000000;
+    background-color: #ffffff;
 }
 
 .form-group input:focus,
