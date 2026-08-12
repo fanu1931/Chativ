@@ -15,11 +15,24 @@ const stateRooms = {};
 
 // Dummy/simulated users configuration
 const dummyUsers = [
-    { nickname: 'Priya_22', age: 22, gender: 'Female', country: 'India', state: 'Maharashtra' },
-    { nickname: 'Rahul_25', age: 25, gender: 'Male', country: 'India', state: 'Maharashtra' },
-    { nickname: 'Sneha_21', age: 21, gender: 'Female', country: 'India', state: 'Maharashtra' },
-    { nickname: 'Amit_24', age: 24, gender: 'Male', country: 'India', state: 'Maharashtra' },
-    { nickname: 'Pooja_23', age: 23, gender: 'Female', country: 'India', state: 'Maharashtra' }
+    // Females (10)
+    { nickname: 'Priya_27', age: 27, gender: 'Female', country: 'India', state: 'Maharashtra' },
+    { nickname: 'Neha_29', age: 29, gender: 'Female', country: 'India', state: 'Delhi' },
+    { nickname: 'Pooja_26', age: 26, gender: 'Female', country: 'India', state: 'Karnataka' },
+    { nickname: 'Sneha_31', age: 31, gender: 'Female', country: 'India', state: 'Gujarat' },
+    { nickname: 'Ananya_28', age: 28, gender: 'Female', country: 'India', state: 'West Bengal' },
+    { nickname: 'Ritu_33', age: 33, gender: 'Female', country: 'India', state: 'Punjab' },
+    { nickname: 'Kavya_30', age: 30, gender: 'Female', country: 'India', state: 'Tamil Nadu' },
+    { nickname: 'Meera_34', age: 34, gender: 'Female', country: 'India', state: 'Rajasthan' },
+    { nickname: 'Divya_26', age: 26, gender: 'Female', country: 'India', state: 'Uttar Pradesh' },
+    { nickname: 'Tanvi_32', age: 32, gender: 'Female', country: 'India', state: 'Madhya Pradesh' },
+    // Males (6)
+    { nickname: 'Rahul_28', age: 28, gender: 'Male', country: 'India', state: 'Maharashtra' },
+    { nickname: 'Amit_32', age: 32, gender: 'Male', country: 'India', state: 'Haryana' },
+    { nickname: 'Vikram_35', age: 35, gender: 'Male', country: 'India', state: 'Karnataka' },
+    { nickname: 'Rohan_27', age: 27, gender: 'Male', country: 'India', state: 'Delhi' },
+    { nickname: 'Akash_30', age: 30, gender: 'Male', country: 'India', state: 'Gujarat' },
+    { nickname: 'Sameer_34', age: 34, gender: 'Male', country: 'India', state: 'Telangana' }
 ];
 
 // Auto-reply messages for dummy users
@@ -354,7 +367,8 @@ io.on('connection', (socket) => {
                     autoReplySent: false
                 };
                 
-                // Trigger auto-reply after 3 seconds
+                // Trigger auto-reply after random 2-4 seconds
+                const randomDelay = Math.floor(Math.random() * 2000) + 2000; // 2000-4000ms
                 setTimeout(() => {
                     if (dummyUserConversations[conversationKey] && !dummyUserConversations[conversationKey].autoReplySent) {
                         const randomReply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
