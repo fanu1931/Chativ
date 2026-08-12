@@ -44,9 +44,6 @@ const autoReplies = [
     'Hi! How can I help you today?'
 ];
 
-// Track real users who have messaged dummy users (for auto-reply)
-const dummyUserConversations = {};
-
 // Safety and anti-abuse systems
 const userReports = {}; // Track reports against users
 const bannedUsers = {}; // Track temporarily banned users
@@ -209,22 +206,20 @@ io.on('connection', (socket) => {
             type: 'join'
         });
 
-        // Send updated user list to all in state room (including dummy users)
+        // Send updated user list to all in state room (including all dummy users)
         const allUsers = [...stateRooms[state]];
         
-        // Add dummy users that match the state
+        // Add all dummy users
         dummyUsers.forEach(dummyUser => {
-            if (dummyUser.state === state) {
-                allUsers.push({
-                    socketId: `dummy_${dummyUser.nickname}`,
-                    nickname: dummyUser.nickname,
-                    age: dummyUser.age,
-                    gender: dummyUser.gender,
-                    country: dummyUser.country,
-                    state: dummyUser.state,
-                    isDummy: true
-                });
-            }
+            allUsers.push({
+                socketId: `dummy_${dummyUser.nickname}`,
+                nickname: dummyUser.nickname,
+                age: dummyUser.age,
+                gender: dummyUser.gender,
+                country: dummyUser.country,
+                state: dummyUser.state,
+                isDummy: true
+            });
         });
         
         io.to(state).emit('user-list', allUsers);
@@ -359,32 +354,20 @@ io.on('connection', (socket) => {
             
             io.to(socket.id).emit('private-message', messageData);
             
-            // Track conversation for auto-reply
-            const conversationKey = `${socket.id}_${dummyUser.nickname}`;
-            if (!dummyUserConversations[conversationKey]) {
-                dummyUserConversations[conversationKey] = {
-                    firstMessageSent: true,
-                    autoReplySent: false
+            // Trigger auto-reply after random 2-4 seconds for every message
+            const randomDelay = Math.floor(Math.random() * 2000) + 2000; // 2000-4000ms
+            setTimeout(() => {
+                const randomReply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
+                const autoReplyData = {
+                    from: dummyUser.nickname,
+                    to: sender.nickname,
+                    message: randomReply,
+                    timestamp: new Date().toLocaleTimeString(),
+                    gender: dummyUser.gender
                 };
                 
-                // Trigger auto-reply after random 2-4 seconds
-                const randomDelay = Math.floor(Math.random() * 2000) + 2000; // 2000-4000ms
-                setTimeout(() => {
-                    if (dummyUserConversations[conversationKey] && !dummyUserConversations[conversationKey].autoReplySent) {
-                        const randomReply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
-                        const autoReplyData = {
-                            from: dummyUser.nickname,
-                            to: sender.nickname,
-                            message: randomReply,
-                            timestamp: new Date().toLocaleTimeString(),
-                            gender: dummyUser.gender
-                        };
-                        
-                        io.to(socket.id).emit('private-message', autoReplyData);
-                        dummyUserConversations[conversationKey].autoReplySent = true;
-                    }
-                }, 3000);
-            }
+                io.to(socket.id).emit('private-message', autoReplyData);
+            }, randomDelay);
             return;
         }
 
@@ -483,22 +466,20 @@ io.on('connection', (socket) => {
                     type: 'leave'
                 });
                 
-                // Send updated user list including dummy users
+                // Send updated user list including all dummy users
                 const allUsers = [...stateRooms[user.state]];
                 
-                // Add dummy users that match the state
+                // Add all dummy users
                 dummyUsers.forEach(dummyUser => {
-                    if (dummyUser.state === user.state) {
-                        allUsers.push({
-                            socketId: `dummy_${dummyUser.nickname}`,
-                            nickname: dummyUser.nickname,
-                            age: dummyUser.age,
-                            gender: dummyUser.gender,
-                            country: dummyUser.country,
-                            state: dummyUser.state,
-                            isDummy: true
-                        });
-                    }
+                    allUsers.push({
+                        socketId: `dummy_${dummyUser.nickname}`,
+                        nickname: dummyUser.nickname,
+                        age: dummyUser.age,
+                        gender: dummyUser.gender,
+                        country: dummyUser.country,
+                        state: dummyUser.state,
+                        isDummy: true
+                    });
                 });
                 
                 io.to(user.state).emit('user-list', allUsers);

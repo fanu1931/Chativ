@@ -44,7 +44,6 @@ const navTabs = document.querySelectorAll('.nav-tab');
 const freeChatRoomsBtn = document.getElementById('free-chat-rooms');
 const oneOnOneChatBtn = document.getElementById('one-on-one-chat');
 const chatRoomsBtn = document.getElementById('chat-rooms');
-const inboxBtn = document.getElementById('inbox');
 const profileBtn = document.getElementById('profile');
 
 // Profile modal elements
@@ -345,23 +344,12 @@ function displayUsers(users) {
                 <div class="user-details">${user.age} • ${user.gender} • ${countryFlag} ${user.state}</div>
             </div>
             <div class="online-status"></div>
-            ${user.nickname !== currentUser.nickname ? `<button class="btn-report" data-nickname="${escapeHtml(user.nickname)}">Report</button>` : ''}
         `;
         
         if (user.nickname !== currentUser.nickname) {
             li.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('btn-report')) {
-                    openPrivateChat(user.nickname);
-                }
+                openPrivateChat(user.nickname);
             });
-            
-            const reportBtn = li.querySelector('.btn-report');
-            if (reportBtn) {
-                reportBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    reportUser(user.nickname);
-                });
-            }
         }
         
         usersList.appendChild(li);
@@ -383,23 +371,12 @@ function displayUsers(users) {
                 <div class="user-details">${user.age} • ${user.gender} • ${countryFlag} ${user.state}</div>
             </div>
             <div class="online-status"></div>
-            ${user.nickname !== currentUser.nickname ? `<button class="btn-report" data-nickname="${escapeHtml(user.nickname)}">Report</button>` : ''}
         `;
         
         if (user.nickname !== currentUser.nickname) {
             li.addEventListener('click', (e) => {
-                if (!e.target.classList.contains('btn-report')) {
-                    openPrivateChat(user.nickname);
-                }
+                openPrivateChat(user.nickname);
             });
-            
-            const reportBtn = li.querySelector('.btn-report');
-            if (reportBtn) {
-                reportBtn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    reportUser(user.nickname);
-                });
-            }
         }
         
         mobileUsersList.appendChild(li);
@@ -638,21 +615,6 @@ chatRoomsBtn.addEventListener('click', (e) => {
     const roomsSidebar = document.querySelector('.sidebar-left');
     if (roomsSidebar) {
         roomsSidebar.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-});
-
-inboxBtn.addEventListener('click', (e) => {
-    e.preventDefault();
-    // Scroll to inbox section in sidebar
-    const inboxList = document.querySelector('.inbox-list');
-    if (inboxList) {
-        inboxList.scrollIntoView({ behavior: 'smooth', block: 'center' });
-        // Add highlight effect
-        inboxList.style.transition = 'background-color 0.3s';
-        inboxList.style.backgroundColor = 'rgba(0, 145, 234, 0.1)';
-        setTimeout(() => {
-            inboxList.style.backgroundColor = '';
-        }, 1000);
     }
 });
 
