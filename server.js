@@ -13,6 +13,27 @@ app.use(express.static(path.join(__dirname, 'public')));
 const users = {};
 const stateRooms = {};
 
+// Dummy/simulated users configuration
+const dummyUsers = [
+    { nickname: 'Priya_22', age: 22, gender: 'Female', country: 'India', state: 'Maharashtra' },
+    { nickname: 'Rahul_25', age: 25, gender: 'Male', country: 'India', state: 'Maharashtra' },
+    { nickname: 'Sneha_21', age: 21, gender: 'Female', country: 'India', state: 'Maharashtra' },
+    { nickname: 'Amit_24', age: 24, gender: 'Male', country: 'India', state: 'Maharashtra' },
+    { nickname: 'Pooja_23', age: 23, gender: 'Female', country: 'India', state: 'Maharashtra' }
+];
+
+// Auto-reply messages for dummy users
+const autoReplies = [
+    'Hey! How are you?',
+    'Hi there, welcome!',
+    'Hello! Nice to meet you!',
+    'Hey! What brings you here?',
+    'Hi! How can I help you today?'
+];
+
+// Track real users who have messaged dummy users (for auto-reply)
+const dummyUserConversations = {};
+
 // Safety and anti-abuse systems
 const userReports = {}; // Track reports against users
 const bannedUsers = {}; // Track temporarily banned users
@@ -175,8 +196,25 @@ io.on('connection', (socket) => {
             type: 'join'
         });
 
-        // Send updated user list to all in state room
-        io.to(state).emit('user-list', stateRooms[state]);
+        // Send updated user list to all in state room (including dummy users)
+        const allUsers = [...stateRooms[state]];
+        
+        // Add dummy users that match the state
+        dummyUsers.forEach(dummyUser => {
+            if (dummyUser.state === state) {
+                allUsers.push({
+                    socketId: `dummy_${dummyUser.nickname}`,
+                    nickname: dummyUser.nickname,
+                    age: dummyUser.age,
+                    gender: dummyUser.gender,
+                    country: dummyUser.country,
+                    state: dummyUser.state,
+                    isDummy: true
+                });
+            }
+        });
+        
+        io.to(state).emit('user-list', allUsers);
 
         console.log(`${nickname} joined ${state}`);
     });
@@ -293,6 +331,49 @@ io.on('connection', (socket) => {
         // Censor profanity
         const censoredMessage = censorProfanity(message);
 
+        // Check if target is a dummy user
+        const dummyUser = dummyUsers.find(u => u.nickname === data.targetNickname);
+        
+        if (dummyUser) {
+            // Send the real user's message to themselves (echo back)
+            const messageData = {
+                from: sender.nickname,
+                to: dummyUser.nickname,
+                message: censoredMessage,
+                timestamp: new Date().toLocaleTimeString(),
+                gender: sender.gender
+            };
+            
+            io.to(socket.id).emit('private-message', messageData);
+            
+            // Track conversation for auto-reply
+            const conversationKey = `${socket.id}_${dummyUser.nickname}`;
+            if (!dummyUserConversations[conversationKey]) {
+                dummyUserConversations[conversationKey] = {
+                    firstMessageSent: true,
+                    autoReplySent: false
+                };
+                
+                // Trigger auto-reply after 3 seconds
+                setTimeout(() => {
+                    if (dummyUserConversations[conversationKey] && !dummyUserConversations[conversationKey].autoReplySent) {
+                        const randomReply = autoReplies[Math.floor(Math.random() * autoReplies.length)];
+                        const autoReplyData = {
+                            from: dummyUser.nickname,
+                            to: sender.nickname,
+                            message: randomReply,
+                            timestamp: new Date().toLocaleTimeString(),
+                            gender: dummyUser.gender
+                        };
+                        
+                        io.to(socket.id).emit('private-message', autoReplyData);
+                        dummyUserConversations[conversationKey].autoReplySent = true;
+                    }
+                }, 3000);
+            }
+            return;
+        }
+
         const targetUser = Object.values(users).find(
             u => u.nickname === data.targetNickname
         );
@@ -387,7 +468,26 @@ io.on('connection', (socket) => {
                     message: `${user.nickname} has left the room`,
                     type: 'leave'
                 });
-                io.to(user.state).emit('user-list', stateRooms[user.state]);
+                
+                // Send updated user list including dummy users
+                const allUsers = [...stateRooms[user.state]];
+                
+                // Add dummy users that match the state
+                dummyUsers.forEach(dummyUser => {
+                    if (dummyUser.state === user.state) {
+                        allUsers.push({
+                            socketId: `dummy_${dummyUser.nickname}`,
+                            nickname: dummyUser.nickname,
+                            age: dummyUser.age,
+                            gender: dummyUser.gender,
+                            country: dummyUser.country,
+                            state: dummyUser.state,
+                            isDummy: true
+                        });
+                    }
+                });
+                
+                io.to(user.state).emit('user-list', allUsers);
             }
 
             // Remove user
