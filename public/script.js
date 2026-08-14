@@ -32,6 +32,8 @@ let privateMessageHistory = {};
 
 // Initialize DOM elements when page loads
 function initializeDOMElements() {
+    console.log('Initializing DOM elements...');
+    
     // DOM Elements
     landingPage = document.getElementById('landing-page');
     chatPage = document.getElementById('chat-page');
@@ -124,6 +126,12 @@ function initializeDOMElements() {
     modalTitle = document.getElementById('modal-title');
     modalBody = document.getElementById('modal-body');
     modalClose = document.getElementById('modal-close');
+    
+    // Debug: Check critical elements
+    console.log('enterChatBtn found:', !!enterChatBtn);
+    console.log('termsModal found:', !!termsModal);
+    console.log('landingPage found:', !!landingPage);
+    console.log('chatPage found:', !!chatPage);
 }
 
 // Initialize Socket.io
@@ -171,6 +179,8 @@ function getSelectedGender() {
 
 // Function to proceed to chat screen
 function proceedToChat() {
+    console.log('Proceeding to chat with user:', currentUser);
+    
     // Save state to localStorage
     localStorage.setItem('userState', currentUser.state);
 
@@ -178,16 +188,30 @@ function proceedToChat() {
     try {
         initSocket();
         socket.emit('join', currentUser);
+        console.log('Socket initialized and user joined');
     } catch (error) {
         console.error('Socket initialization error:', error);
         // Continue with UI update even if socket fails
     }
 
     // Update UI - transition from landing to chat
-    if (landingPage) landingPage.classList.add('hidden');
-    if (chatPage) chatPage.classList.remove('hidden');
-    if (welcomeMessage) welcomeMessage.textContent = `Welcome to ${currentUser.state} Chat Room`;
-    if (navUsername) navUsername.textContent = currentUser.nickname;
+    console.log('Updating UI elements');
+    if (landingPage) {
+        landingPage.classList.add('hidden');
+        console.log('Landing page hidden');
+    }
+    if (chatPage) {
+        chatPage.classList.remove('hidden');
+        console.log('Chat page shown');
+    }
+    if (welcomeMessage) {
+        welcomeMessage.textContent = `Welcome to ${currentUser.state} Chat Room`;
+        console.log('Welcome message updated');
+    }
+    if (navUsername) {
+        navUsername.textContent = currentUser.nickname;
+        console.log('Nav username updated');
+    }
 
     // Clear messages
     if (messagesContainer) messagesContainer.innerHTML = '';
@@ -202,6 +226,8 @@ function proceedToChat() {
     // Hide terms modal and backdrop
     if (termsModal) termsModal.classList.add('hidden');
     if (backdropOverlay) backdropOverlay.classList.remove('active');
+    
+    console.log('Chat transition complete');
 }
 
 // Get state value (from dropdown or manual input)
@@ -896,12 +922,17 @@ function initializeEventListeners() {
 
     // Terms modal functionality
     if (enterChatBtn) {
-        enterChatBtn.addEventListener('click', () => {
-            const nickname = nicknameInput.value.trim();
-            const age = ageInput.value;
+        enterChatBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            console.log('START CHAT NOW button clicked');
+            
+            const nickname = nicknameInput ? nicknameInput.value.trim() : '';
+            const age = ageInput ? ageInput.value : '';
             const gender = getSelectedGender();
-            const country = countryInput.value;
+            const country = countryInput ? countryInput.value : '';
             const state = getStateValue();
+
+            console.log('Form values:', { nickname, age, gender, country, state });
 
             // Validate all required fields
             if (!nickname || !age || !gender || !country || !state) {
@@ -923,6 +954,7 @@ function initializeEventListeners() {
 
             // Store validated data for later use
             currentUser = { nickname, age, gender, country, state };
+            console.log('User data stored:', currentUser);
 
             // Try to show terms modal with fallback
             try {
@@ -930,6 +962,7 @@ function initializeEventListeners() {
                     termsModal.classList.remove('hidden');
                     // Show backdrop overlay
                     if (backdropOverlay) backdropOverlay.classList.add('active');
+                    console.log('Terms modal shown');
                 } else {
                     // Fallback: if terms modal doesn't exist, proceed directly to chat
                     console.warn('Terms modal not found, proceeding directly to chat');
@@ -941,6 +974,8 @@ function initializeEventListeners() {
                 proceedToChat();
             }
         });
+    } else {
+        console.error('enterChatBtn not found! Button element: #enter-chat');
     }
 
     // Ensure terms modal exists and is properly hidden initially
@@ -1471,12 +1506,16 @@ function initializeEventListeners() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
+    console.log('DOM Content Loaded - Initializing application');
+    
     try {
         // Initialize DOM elements
         initializeDOMElements();
         
         // Initialize event listeners
         initializeEventListeners();
+        
+        console.log('Event listeners initialized');
         
         // Hide all modals
         if (termsModal) termsModal.classList.add('hidden');
@@ -1509,6 +1548,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.innerWidth <= 768) {
             switchMobileTab('chat');
         }
+        
+        console.log('Application initialization complete');
     } catch (error) {
         console.error('Error during page initialization:', error);
     }
