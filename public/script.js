@@ -193,6 +193,20 @@ function getEditStateValue() {
     return editStateSelect ? editStateSelect.value : '';
 }
 
+// Login and Register link functionality
+const loginLink = document.querySelector('.login-link');
+const registerLink = document.querySelector('.register-link');
+
+loginLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Login is not required. Simply fill in your details and click "START CHAT NOW" to begin chatting!');
+});
+
+registerLink.addEventListener('click', (e) => {
+    e.preventDefault();
+    alert('Registration is not required. Simply fill in your details and click "START CHAT NOW" to begin chatting!');
+});
+
 // Terms modal functionality
 enterChatBtn.addEventListener('click', () => {
     const nickname = nicknameInput.value.trim();

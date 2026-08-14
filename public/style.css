@@ -228,6 +228,7 @@ body {
     background-size: 16px;
     padding-right: 40px;
     cursor: pointer;
+    color: #000000;
 }
 
 .form-group select option {
@@ -244,6 +245,10 @@ body {
 .form-group select option:checked {
     background-color: var(--primary-blue);
     color: white;
+}
+
+.form-group select option:hover {
+    background-color: var(--light-blue);
 }
 
 .form-group input:focus,
