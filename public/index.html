@@ -12,12 +12,16 @@
     <div id="landing-page" class="landing-page">
         <!-- Top Header -->
         <header class="landing-header">
-            <div class="logo">Chatic</div>
-            <nav class="landing-nav">
-                <a href="#">Free Chat Rooms</a>
-                <a href="#">1 On 1 Chat</a>
-                <a href="#">Profile</a>
-            </nav>
+            <div class="header-left-text">Free chat rooms</div>
+            <div class="header-center-logo">
+                <span class="logo-text">chatic</span>
+                <span class="speech-bubble-icon">💬</span>
+            </div>
+            <button class="hamburger-menu" id="landing-hamburger-menu">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
         </header>
 
         <!-- 3-Column Layout -->
@@ -56,35 +60,30 @@
                     <h2>Chat Without Registration</h2>
                     <div class="entry-form">
                         <div class="form-group">
-                            <label for="nickname">Nickname</label>
-                            <input type="text" id="nickname" placeholder="Enter your nickname" required>
+                            <label for="nickname">Choose your username</label>
+                            <input type="text" id="nickname" placeholder="Enter your username" required>
                         </div>
                         
                         <div class="form-group">
                             <label>Gender</label>
                             <div class="gender-selector">
-                                <label class="gender-option">
-                                    <input type="radio" name="gender" value="Male" required>
-                                    <span class="gender-icon">👨</span>
-                                    <span>Male</span>
-                                </label>
-                                <label class="gender-option">
+                                <label class="gender-option female-option">
                                     <input type="radio" name="gender" value="Female">
-                                    <span class="gender-icon">👩</span>
+                                    <span class="gender-icon female-icon">👩</span>
                                     <span>Female</span>
                                 </label>
-                                <label class="gender-option">
-                                    <input type="radio" name="gender" value="Other">
-                                    <span class="gender-icon">🧑</span>
-                                    <span>Other</span>
+                                <label class="gender-option male-option">
+                                    <input type="radio" name="gender" value="Male" checked required>
+                                    <span class="gender-icon male-icon">👨</span>
+                                    <span>Male</span>
                                 </label>
                             </div>
                         </div>
                         
                         <div class="form-group">
-                            <label for="age">Age</label>
-                            <select id="age" name="age" required class="w-full p-2.5 border border-gray-300 rounded-lg text-gray-900 bg-white">
-                                <option value="" disabled selected>Select Age (18+)</option>
+                            <label for="age">Age (site limited to 18+)</label>
+                            <select id="age" name="age" required>
+                                <option value="" disabled selected>Select Age</option>
                                 <option value="18">18</option>
                                 <option value="19">19</option>
                                 <option value="20">20</option>
@@ -173,7 +172,7 @@
                         <div class="form-group">
                             <label for="country">Country</label>
                             <select id="country" required>
-                                <option value="">Select Country</option>
+                                <option value="" disabled selected>Select Country</option>
                                 <option value="India">India</option>
                                 <option value="United States">United States</option>
                                 <option value="United Kingdom">United Kingdom</option>
@@ -181,18 +180,124 @@
                                 <option value="Australia">Australia</option>
                                 <option value="Germany">Germany</option>
                                 <option value="France">France</option>
+                                <option value="Japan">Japan</option>
+                                <option value="South Korea">South Korea</option>
+                                <option value="China">China</option>
+                                <option value="Singapore">Singapore</option>
+                                <option value="UAE">United Arab Emirates</option>
+                                <option value="Saudi Arabia">Saudi Arabia</option>
+                                <option value="Brazil">Brazil</option>
+                                <option value="Mexico">Mexico</option>
+                                <option value="South Africa">South Africa</option>
+                                <option value="Nigeria">Nigeria</option>
+                                <option value="Egypt">Egypt</option>
+                                <option value="Russia">Russia</option>
+                                <option value="Italy">Italy</option>
+                                <option value="Spain">Spain</option>
+                                <option value="Netherlands">Netherlands</option>
+                                <option value="Sweden">Sweden</option>
+                                <option value="Norway">Norway</option>
+                                <option value="Denmark">Denmark</option>
+                                <option value="Finland">Finland</option>
+                                <option value="Switzerland">Switzerland</option>
+                                <option value="Austria">Austria</option>
+                                <option value="Belgium">Belgium</option>
+                                <option value="Ireland">Ireland</option>
+                                <option value="Portugal">Portugal</option>
+                                <option value="Greece">Greece</option>
+                                <option value="Turkey">Turkey</option>
+                                <option value="Poland">Poland</option>
+                                <option value="Czech Republic">Czech Republic</option>
+                                <option value="Hungary">Hungary</option>
+                                <option value="Romania">Romania</option>
+                                <option value="Ukraine">Ukraine</option>
+                                <option value="Thailand">Thailand</option>
+                                <option value="Vietnam">Vietnam</option>
+                                <option value="Philippines">Philippines</option>
+                                <option value="Indonesia">Indonesia</option>
+                                <option value="Malaysia">Malaysia</option>
+                                <option value="Pakistan">Pakistan</option>
+                                <option value="Bangladesh">Bangladesh</option>
+                                <option value="Sri Lanka">Sri Lanka</option>
+                                <option value="Nepal">Nepal</option>
+                                <option value="New Zealand">New Zealand</option>
+                                <option value="Argentina">Argentina</option>
+                                <option value="Colombia">Colombia</option>
+                                <option value="Chile">Chile</option>
+                                <option value="Peru">Peru</option>
+                                <option value="Venezuela">Venezuela</option>
                                 <option value="Other">Other</option>
                             </select>
                         </div>
                         
                         <div class="form-group">
-                            <label for="state">State/Region</label>
-                            <input type="text" id="state" placeholder="Enter your state/region (e.g., Maharashtra, Gujarat, Goa)" required>
+                            <label for="state">State</label>
+                            <select id="state" required>
+                                <option value="" disabled selected>Select State</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                                <option value="Assam">Assam</option>
+                                <option value="Bihar">Bihar</option>
+                                <option value="Chhattisgarh">Chhattisgarh</option>
+                                <option value="Goa">Goa</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Haryana">Haryana</option>
+                                <option value="Himachal Pradesh">Himachal Pradesh</option>
+                                <option value="Jharkhand">Jharkhand</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Kerala">Kerala</option>
+                                <option value="Madhya Pradesh">Madhya Pradesh</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Manipur">Manipur</option>
+                                <option value="Meghalaya">Meghalaya</option>
+                                <option value="Mizoram">Mizoram</option>
+                                <option value="Nagaland">Nagaland</option>
+                                <option value="Odisha">Odisha</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Sikkim">Sikkim</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Telangana">Telangana</option>
+                                <option value="Tripura">Tripura</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="Uttarakhand">Uttarakhand</option>
+                                <option value="West Bengal">West Bengal</option>
+                                <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                                <option value="Chandigarh">Chandigarh</option>
+                                <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                                <option value="Ladakh">Ladakh</option>
+                                <option value="Lakshadweep">Lakshadweep</option>
+                                <option value="Puducherry">Puducherry</option>
+                                <option value="Other">Other (Enter manually)</option>
+                            </select>
+                            <input type="text" id="state-manual" placeholder="Enter state manually" style="display: none; margin-top: 5px;">
                         </div>
                         
-                        <p class="legal-disclaimer">By clicking Start Chat Now, you confirm that you are 18+ years of age and agree to our <a href="#" data-modal="terms">Terms of Use</a>, <a href="#" data-modal="privacy">Privacy Policy</a>, and <a href="#" data-modal="safety">Safety Guidelines</a>.</p>
-                        
                         <button id="enter-chat" class="btn-primary">START CHAT NOW</button>
+                        
+                        <div class="form-links">
+                            <a href="#" class="login-link">Login</a>
+                            <a href="#" class="register-link">Register</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Terms Agreement Modal -->
+            <div id="terms-modal" class="terms-modal hidden">
+                <div class="terms-modal-content">
+                    <h3>By using this website you agree to:</h3>
+                    <ul class="terms-checklist">
+                        <li><span class="checkmark">✓</span> I am 18 years of age or older</li>
+                        <li><span class="checkmark">✓</span> I agree to the Terms of use</li>
+                        <li><span class="checkmark">✓</span> I agree to the Privacy policy</li>
+                        <li><span class="checkmark">✓</span> I agree to the Safety guidelines</li>
+                    </ul>
+                    <div class="terms-modal-buttons">
+                        <button id="terms-agree" class="btn-agree">Agree</button>
+                        <button id="terms-disagree" class="btn-disagree">Disagree</button>
                     </div>
                 </div>
             </div>
@@ -267,6 +372,54 @@
             </nav>
         </header>
         
+        <!-- Top Tab Navigation -->
+        <div class="chat-tabs-nav">
+            <button class="chat-tab active" data-tab="one-on-one">1 on 1 Chat</button>
+            <button class="chat-tab" data-tab="rooms">Rooms</button>
+            <button class="chat-tab" data-tab="ai-chat">Ai Chat</button>
+            <button class="chat-tab sound-toggle" id="sound-toggle">
+                <span class="sound-icon">🔊</span>
+            </button>
+        </div>
+        
+        <!-- Sub-Header Icon Bar -->
+        <div class="chat-sub-header-icons">
+            <div class="sub-header-item">
+                <span class="sub-header-icon online-icon">🟢</span>
+                <span class="sub-header-label">Online</span>
+                <span class="online-badge" id="online-count">0</span>
+            </div>
+            <div class="sub-header-item dropdown-trigger" id="gender-dropdown">
+                <span class="sub-header-icon gender-icon">⚧</span>
+                <span class="sub-header-label">Gender</span>
+                <div class="dropdown-menu" id="gender-dropdown-menu">
+                    <div class="dropdown-item" data-filter="all">All</div>
+                    <div class="dropdown-item" data-filter="male">Male</div>
+                    <div class="dropdown-item" data-filter="female">Female</div>
+                </div>
+            </div>
+            <div class="sub-header-item">
+                <span class="sub-header-icon history-icon">📜</span>
+                <span class="sub-header-label">History</span>
+            </div>
+            <div class="sub-header-item">
+                <span class="sub-header-icon search-icon">🔍</span>
+                <span class="sub-header-label">Search</span>
+            </div>
+            <div class="sub-header-item">
+                <span class="sub-header-icon inbox-icon">📥</span>
+                <span class="sub-header-label">Inbox</span>
+            </div>
+            <div class="sub-header-item">
+                <span class="sub-header-icon friends-icon">👥</span>
+                <span class="sub-header-label">Friends</span>
+            </div>
+            <div class="sub-header-item">
+                <span class="sub-header-icon random-icon">🎲</span>
+                <span class="sub-header-label">Random</span>
+            </div>
+        </div>
+        
         <!-- Mobile Navigation Menu -->
         <div class="mobile-nav-menu" id="mobile-nav-menu">
             <div class="mobile-menu-header">
@@ -276,7 +429,7 @@
             <a href="#" id="mobile-free-chat-rooms">Free Chat Rooms</a>
             <a href="#" id="mobile-one-on-one-chat">1 On 1 Chat</a>
             <a href="#" id="mobile-profile">Profile</a>
-            <a href="#" id="mobile-leave-chat" class="leave-chat-link">Leave Chat</a>
+            <a href="#" id="mobile-logout" class="logout-link">Logout</a>
         </div>
         
         <!-- Backdrop Overlay -->
@@ -287,7 +440,7 @@
             <div class="welcome-message">
                 <span id="welcome-message">Welcome to Chatic!</span>
             </div>
-            <button id="leave-chat" class="btn-leave">Leave Chat</button>
+            <button id="logout-btn" class="btn-logout">Logout</button>
         </div>
 
         <!-- Safety Warning Banner -->
@@ -580,7 +733,47 @@
                     </div>
                     <div class="profile-field">
                         <label>State/Region:</label>
-                        <input type="text" id="edit-state" list="state-suggestions">
+                        <select id="edit-state">
+                            <option value="" disabled selected>Select State</option>
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                            <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                            <option value="Chandigarh">Chandigarh</option>
+                            <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra and Nagar Haveli and Daman and Diu</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+                            <option value="Ladakh">Ladakh</option>
+                            <option value="Lakshadweep">Lakshadweep</option>
+                            <option value="Puducherry">Puducherry</option>
+                            <option value="Other">Other (Enter manually)</option>
+                        </select>
+                        <input type="text" id="edit-state-manual" placeholder="Enter state manually" style="display: none; margin-top: 5px;">
                     </div>
                 </div>
             </div>
@@ -599,6 +792,77 @@
             </div>
             <div class="modal-body" id="modal-body">
                 <!-- Content will be loaded dynamically -->
+            </div>
+        </div>
+    </div>
+
+    <!-- History Modal -->
+    <div id="history-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Chat History</h2>
+                <button class="modal-close" id="history-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>No history available yet. Start chatting to build your history!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Search Modal -->
+    <div id="search-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Search Users</h2>
+                <button class="modal-close" id="search-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-input-container">
+                    <input type="text" id="search-input" placeholder="Search by username...">
+                    <button id="search-button" class="btn-primary">Search</button>
+                </div>
+                <div id="search-results" class="search-results">
+                    <p class="no-results">Enter a username to search</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Friends Modal -->
+    <div id="friends-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Friends</h2>
+                <button class="modal-close" id="friends-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p>No friends added yet. Click on a user and select "Add to Friends" to build your network!</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Chat Modal -->
+    <div id="ai-chat-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>AI Chat Assistant</h2>
+                <button class="modal-close" id="ai-chat-modal-close">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="ai-chat-container">
+                    <div id="ai-messages" class="ai-messages">
+                        <div class="ai-message ai-response">
+                            <div class="message-header">
+                                <span class="nickname">AI Assistant</span>
+                            </div>
+                            <div class="message-bubble">Hello! I'm your AI chat assistant. How can I help you today?</div>
+                        </div>
+                    </div>
+                    <div class="ai-input-area">
+                        <input type="text" id="ai-input" placeholder="Type your message to AI...">
+                        <button id="ai-send" class="btn-primary">Send</button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

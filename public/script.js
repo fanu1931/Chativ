@@ -5,11 +5,10 @@ const nicknameInput = document.getElementById('nickname');
 const ageInput = document.getElementById('age');
 const countryInput = document.getElementById('country');
 const stateInput = document.getElementById('state');
-// Room input removed - using state as room
 const enterChatBtn = document.getElementById('enter-chat');
 const welcomeMessage = document.getElementById('welcome-message');
 const navUsername = document.getElementById('nav-username');
-const leaveChatBtn = document.getElementById('leave-chat');
+const logoutBtn = document.getElementById('logout-btn');
 const messagesContainer = document.getElementById('messages-container');
 const messageInput = document.getElementById('message-input');
 const sendMessageBtn = document.getElementById('send-message');
@@ -22,6 +21,41 @@ const closePrivateChatBtn = document.getElementById('close-private-chat');
 const privateMessages = document.getElementById('private-messages');
 const privateMessageInput = document.getElementById('private-message-input');
 const sendPrivateMessageBtn = document.getElementById('send-private-message');
+
+// New DOM Elements for Chatib redesign
+const termsModal = document.getElementById('terms-modal');
+const termsAgreeBtn = document.getElementById('terms-agree');
+const termsDisagreeBtn = document.getElementById('terms-disagree');
+const landingHamburgerMenu = document.getElementById('landing-hamburger-menu');
+const genderDropdown = document.getElementById('gender-dropdown');
+const genderDropdownMenu = document.getElementById('gender-dropdown-menu');
+const soundToggle = document.getElementById('sound-toggle');
+const onlineCount = document.getElementById('online-count');
+const chatTabs = document.querySelectorAll('.chat-tab');
+
+// New modal elements
+const historyModal = document.getElementById('history-modal');
+const historyModalClose = document.getElementById('history-modal-close');
+const searchModal = document.getElementById('search-modal');
+const searchModalClose = document.getElementById('search-modal-close');
+const searchInput = document.getElementById('search-input');
+const searchButton = document.getElementById('search-button');
+const searchResults = document.getElementById('search-results');
+const friendsModal = document.getElementById('friends-modal');
+const friendsModalClose = document.getElementById('friends-modal-close');
+const aiChatModal = document.getElementById('ai-chat-modal');
+const aiChatModalClose = document.getElementById('ai-chat-modal-close');
+const aiMessages = document.getElementById('ai-messages');
+const aiInput = document.getElementById('ai-input');
+const aiSend = document.getElementById('ai-send');
+
+// Logout elements
+const logoutBtn = document.getElementById('logout-btn');
+const mobileLogoutBtn = document.getElementById('mobile-logout');
+
+// Store current users for filtering
+let allUsers = [];
+let currentGenderFilter = 'all';
 
 // Mobile menu elements
 const hamburgerMenu = document.getElementById('hamburger-menu');
@@ -113,8 +147,117 @@ function getSelectedGender() {
     return '';
 }
 
-// Enter chat room
+// Handle state dropdown "Other" option
+const stateSelect = document.getElementById('state');
+const stateManual = document.getElementById('state-manual');
+
+stateSelect.addEventListener('change', function() {
+    if (this.value === 'Other') {
+        stateManual.style.display = 'block';
+        stateManual.required = true;
+        stateSelect.required = false;
+    } else {
+        stateManual.style.display = 'none';
+        stateManual.required = false;
+        stateSelect.required = true;
+    }
+});
+
+// Handle edit state dropdown "Other" option
+const editStateSelect = document.getElementById('edit-state');
+const editStateManual = document.getElementById('edit-state-manual');
+
+if (editStateSelect) {
+    editStateSelect.addEventListener('change', function() {
+        if (this.value === 'Other') {
+            editStateManual.style.display = 'block';
+        } else {
+            editStateManual.style.display = 'none';
+        }
+    });
+}
+
+// Get state value (from dropdown or manual input)
+function getStateValue() {
+    if (stateSelect.value === 'Other') {
+        return stateManual.value.trim();
+    }
+    return stateSelect.value;
+}
+
+// Get edit state value (from dropdown or manual input)
+function getEditStateValue() {
+    if (editStateSelect && editStateSelect.value === 'Other') {
+        return editStateManual ? editStateManual.value.trim() : '';
+    }
+    return editStateSelect ? editStateSelect.value : '';
+}
+
+// Terms modal functionality
 enterChatBtn.addEventListener('click', () => {
+    const nickname = nicknameInput.value.trim();
+    const age = ageInput.value;
+    const gender = getSelectedGender();
+    const country = countryInput.value;
+    const state = getStateValue();
+
+    if (!nickname || !age || !gender || !country || !state) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    if (age < 18) {
+        alert('You must be 18 or older to join this chat.');
+        return;
+    }
+
+    // Show terms modal
+    termsModal.classList.remove('hidden');
+});
+
+termsAgreeBtn.addEventListener('click', () => {
+    // Proceed with chat entry
+    const nickname = nicknameInput.value.trim();
+    const age = ageInput.value;
+    const gender = getSelectedGender();
+    const country = countryInput.value;
+    const state = getStateValue();
+
+    currentUser = { nickname, age, gender, country, state };
+
+    // Save state to localStorage
+    localStorage.setItem('userState', state);
+
+    // Initialize socket and join
+    initSocket();
+    socket.emit('join', currentUser);
+
+    // Update UI
+    landingPage.classList.add('hidden');
+    chatPage.classList.remove('hidden');
+    welcomeMessage.textContent = `Welcome to ${state} Chat Room`;
+    navUsername.textContent = nickname;
+
+    // Clear messages
+    messagesContainer.innerHTML = '';
+    displaySystemMessage(`Welcome to ${state} Chat Room!`);
+    
+    // Display state room in sidebar
+    displayRooms();
+    
+    // Initialize inbox
+    displayInbox();
+
+    // Hide terms modal
+    termsModal.classList.add('hidden');
+});
+
+termsDisagreeBtn.addEventListener('click', () => {
+    termsModal.classList.add('hidden');
+});
+
+// Enter chat room (original functionality moved to terms agree)
+function enterChatRoom() {
     const nickname = nicknameInput.value.trim();
     const age = ageInput.value;
     const gender = getSelectedGender();
@@ -155,10 +298,10 @@ enterChatBtn.addEventListener('click', () => {
     
     // Initialize inbox
     displayInbox();
-});
+}
 
-// Leave chat
-leaveChatBtn.addEventListener('click', () => {
+// Logout functionality
+function handleLogout() {
     if (socket) {
         socket.disconnect();
     }
@@ -169,7 +312,11 @@ leaveChatBtn.addEventListener('click', () => {
     nicknameInput.value = '';
     ageInput.value = '';
     countryInput.value = '';
-    stateInput.value = '';
+    stateSelect.value = '';
+    stateManual.value = '';
+    stateManual.style.display = 'none';
+    stateSelect.required = true;
+    stateManual.required = false;
     
     // Reset gender radio buttons
     const genderRadios = document.getElementsByName('gender');
@@ -178,6 +325,27 @@ leaveChatBtn.addEventListener('click', () => {
     }
     
     messagesContainer.innerHTML = '';
+    
+    // Reset user data
+    currentUser = {
+        nickname: '',
+        age: '',
+        gender: '',
+        country: '',
+        state: ''
+    };
+    
+    // Clear private message history
+    privateMessageHistory = {};
+}
+
+logoutBtn.addEventListener('click', handleLogout);
+
+// Mobile logout
+mobileLogoutBtn.addEventListener('click', (e) => {
+    e.preventDefault();
+    closeMobileMenu();
+    handleLogout();
 });
 
 // Send message
@@ -261,9 +429,11 @@ function displayInbox() {
         const li = document.createElement('li');
         
         const initials = nickname.substring(0, 2).toUpperCase();
+        // Default to male avatar color for inbox
+        const genderClass = 'male';
         
         li.innerHTML = `
-            <div class="inbox-avatar">${initials}</div>
+            <div class="inbox-avatar ${genderClass}">${initials}</div>
             <div class="inbox-info">
                 <div class="inbox-name">${escapeHtml(nickname)}</div>
                 <div class="inbox-preview">${escapeHtml(lastMessage.message)}</div>
@@ -298,9 +468,11 @@ function displayMobileInbox() {
         const li = document.createElement('li');
         
         const initials = nickname.substring(0, 2).toUpperCase();
+        // Default to male avatar color for mobile inbox
+        const genderClass = 'male';
         
         li.innerHTML = `
-            <div class="inbox-avatar">${initials}</div>
+            <div class="inbox-avatar ${genderClass}">${initials}</div>
             <div class="inbox-info">
                 <div class="inbox-name">${escapeHtml(nickname)}</div>
                 <div class="inbox-preview">${escapeHtml(lastMessage.message)}</div>
@@ -317,8 +489,19 @@ function displayMobileInbox() {
 
 // Display online users
 function displayUsers(users) {
+    // Store all users for filtering
+    allUsers = users;
+    
+    // Apply gender filter if set
+    let filteredUsers = users;
+    if (currentGenderFilter !== 'all') {
+        filteredUsers = users.filter(user => 
+            user.gender.toLowerCase() === currentGenderFilter
+        );
+    }
+    
     // Sort users: same state first, then others
-    const sortedUsers = [...users].sort((a, b) => {
+    const sortedUsers = [...filteredUsers].sort((a, b) => {
         if (a.state === currentUser.state && b.state !== currentUser.state) {
             return -1;
         }
@@ -328,6 +511,9 @@ function displayUsers(users) {
         return 0;
     });
 
+    // Update online count
+    onlineCount.textContent = users.length;
+
     // Desktop sidebar
     usersList.innerHTML = '';
     sortedUsers.forEach(user => {
@@ -335,13 +521,13 @@ function displayUsers(users) {
         
         const initials = user.nickname.substring(0, 2).toUpperCase();
         const countryFlag = getCountryFlag(user.country);
-        const isSameState = user.state === currentUser.state;
+        const genderClass = user.gender.toLowerCase() === 'female' ? 'female' : 'male';
         
         li.innerHTML = `
-            <div class="user-avatar ${isSameState ? 'same-state' : ''}">${initials}</div>
+            <div class="user-avatar ${genderClass}">${initials}</div>
             <div class="user-info-text">
-                <div class="user-name">${escapeHtml(user.nickname)} ${isSameState ? '<span class="nearby-badge">Nearby</span>' : ''}</div>
-                <div class="user-details">${user.age} • ${user.gender} • ${countryFlag} ${user.state}</div>
+                <div class="user-name">${escapeHtml(user.nickname)}</div>
+                <div class="user-details">${user.age} Yrs, ${user.state} <span class="country-flag">${countryFlag}</span></div>
             </div>
             <div class="online-status"></div>
         `;
@@ -362,13 +548,13 @@ function displayUsers(users) {
         
         const initials = user.nickname.substring(0, 2).toUpperCase();
         const countryFlag = getCountryFlag(user.country);
-        const isSameState = user.state === currentUser.state;
+        const genderClass = user.gender.toLowerCase() === 'female' ? 'female' : 'male';
         
         li.innerHTML = `
-            <div class="user-avatar ${isSameState ? 'same-state' : ''}">${initials}</div>
+            <div class="user-avatar ${genderClass}">${initials}</div>
             <div class="user-info-text">
-                <div class="user-name">${escapeHtml(user.nickname)} ${isSameState ? '<span class="nearby-badge">Nearby</span>' : ''}</div>
-                <div class="user-details">${user.age} • ${user.gender} • ${countryFlag} ${user.state}</div>
+                <div class="user-name">${escapeHtml(user.nickname)}</div>
+                <div class="user-details">${user.age} Yrs, ${user.state} <span class="country-flag">${countryFlag}</span></div>
             </div>
             <div class="online-status"></div>
         `;
@@ -654,7 +840,26 @@ function openProfileModal() {
     document.getElementById('edit-country').value = currentUser.country;
     
     // Set state
-    document.getElementById('edit-state').value = currentUser.state;
+    if (editStateSelect) {
+        // Check if current state is in the dropdown
+        let stateFound = false;
+        for (let i = 0; i < editStateSelect.options.length; i++) {
+            if (editStateSelect.options[i].value === currentUser.state) {
+                editStateSelect.selectedIndex = i;
+                stateFound = true;
+                break;
+            }
+        }
+        
+        if (!stateFound) {
+            editStateSelect.value = 'Other';
+            editStateManual.style.display = 'block';
+            editStateManual.value = currentUser.state;
+        } else {
+            editStateManual.style.display = 'none';
+            editStateManual.value = '';
+        }
+    }
     
     // Set avatar initials
     const initials = currentUser.nickname.substring(0, 2).toUpperCase();
@@ -673,7 +878,7 @@ updateProfileBtn.addEventListener('click', () => {
     const newAge = document.getElementById('edit-age').value;
     const newGender = getSelectedEditGender();
     const newCountry = document.getElementById('edit-country').value;
-    const newState = document.getElementById('edit-state').value.trim();
+    const newState = getEditStateValue().trim();
     
     // Validate
     if (!newAge || !newGender || !newCountry || !newState) {
@@ -780,11 +985,11 @@ document.getElementById('mobile-profile').addEventListener('click', (e) => {
     profileModal.classList.remove('hidden');
 });
 
-document.getElementById('mobile-leave-chat').addEventListener('click', (e) => {
+document.getElementById('mobile-logout').addEventListener('click', (e) => {
     e.preventDefault();
     closeMobileMenu();
-    // Trigger leave chat functionality
-    leaveChatBtn.click();
+    // Trigger logout functionality
+    handleLogout();
 });
 
 // Helper function to close mobile menu
@@ -1015,4 +1220,273 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && legalModal && legalModal.classList.contains('active')) {
         closeModal();
     }
+    if (e.key === 'Escape' && termsModal && !termsModal.classList.contains('hidden')) {
+        termsModal.classList.add('hidden');
+    }
 });
+
+// Gender dropdown functionality
+genderDropdown.addEventListener('click', () => {
+    genderDropdownMenu.classList.toggle('active');
+});
+
+// Close gender dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    if (!genderDropdown.contains(e.target)) {
+        genderDropdownMenu.classList.remove('active');
+    }
+});
+
+// Gender filter items
+document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', () => {
+        const filter = item.getAttribute('data-filter');
+        // Apply gender filter to user list
+        currentGenderFilter = filter;
+        displayUsers(allUsers);
+        genderDropdownMenu.classList.remove('active');
+    });
+});
+
+// Sound toggle functionality
+let soundEnabled = true;
+soundToggle.addEventListener('click', () => {
+    soundEnabled = !soundEnabled;
+    const soundIcon = soundToggle.querySelector('.sound-icon');
+    soundIcon.textContent = soundEnabled ? '🔊' : '🔇';
+});
+
+// Chat tabs functionality
+chatTabs.forEach(tab => {
+    if (tab.classList.contains('sound-toggle')) return;
+    
+    tab.addEventListener('click', () => {
+        chatTabs.forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        
+        const tabName = tab.getAttribute('data-tab');
+        handleTabSwitch(tabName);
+    });
+});
+
+// Handle tab switching
+function handleTabSwitch(tabName) {
+    console.log('Switching to tab:', tabName);
+    // Implement tab switching logic
+    switch(tabName) {
+        case 'one-on-one':
+            // Show 1 on 1 chat view - this is the main chat view
+            if (window.innerWidth <= 768) {
+                switchMobileTab('chat');
+            }
+            break;
+        case 'rooms':
+            // Show rooms view - scroll to rooms sidebar on desktop or show rooms tab on mobile
+            const roomsSidebar = document.querySelector('.rooms-list');
+            if (roomsSidebar && window.innerWidth > 768) {
+                roomsSidebar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                switchMobileTab('rooms');
+            }
+            break;
+        case 'ai-chat':
+            // Open AI chat modal
+            aiChatModal.classList.add('active');
+            aiInput.focus();
+            break;
+    }
+}
+
+// Landing hamburger menu
+landingHamburgerMenu.addEventListener('click', () => {
+    landingHamburgerMenu.classList.toggle('active');
+    // You may want to show a mobile menu here
+    // For now, it toggles the animation
+});
+
+// Sub-header icon interactions
+document.querySelectorAll('.sub-header-item').forEach(item => {
+    if (item.classList.contains('dropdown-trigger')) return;
+    
+    item.addEventListener('click', () => {
+        const label = item.querySelector('.sub-header-label').textContent;
+        
+        // Implement specific functionality for each icon
+        switch(label) {
+            case 'Online':
+                // Reset to all users
+                currentGenderFilter = 'all';
+                displayUsers(allUsers);
+                break;
+            case 'History':
+                // Open history modal
+                historyModal.classList.add('active');
+                break;
+            case 'Search':
+                // Open search modal
+                searchModal.classList.add('active');
+                searchInput.focus();
+                break;
+            case 'Inbox':
+                // Open inbox - scroll to inbox sidebar on desktop or show private tab on mobile
+                const inboxSidebar = document.querySelector('.inbox-list');
+                if (inboxSidebar && window.innerWidth > 768) {
+                    inboxSidebar.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else {
+                    switchMobileTab('private');
+                }
+                break;
+            case 'Friends':
+                // Open friends modal
+                friendsModal.classList.add('active');
+                break;
+            case 'Random':
+                // Select random user and open private chat
+                selectRandomUser();
+                break;
+        }
+    });
+});
+
+// Modal close buttons
+historyModalClose.addEventListener('click', () => {
+    historyModal.classList.remove('active');
+});
+
+searchModalClose.addEventListener('click', () => {
+    searchModal.classList.remove('active');
+});
+
+friendsModalClose.addEventListener('click', () => {
+    friendsModal.classList.remove('active');
+});
+
+aiChatModalClose.addEventListener('click', () => {
+    aiChatModal.classList.remove('active');
+});
+
+// Close modals on outside click
+[historyModal, searchModal, friendsModal, aiChatModal].forEach(modal => {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.remove('active');
+        }
+    });
+});
+
+// Search functionality
+searchButton.addEventListener('click', performSearch);
+searchInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        performSearch();
+    }
+});
+
+function performSearch() {
+    const query = searchInput.value.trim().toLowerCase();
+    if (!query) {
+        searchResults.innerHTML = '<p class="no-results">Enter a username to search</p>';
+        return;
+    }
+    
+    const results = allUsers.filter(user => 
+        user.nickname.toLowerCase().includes(query) && 
+        user.nickname !== currentUser.nickname
+    );
+    
+    if (results.length === 0) {
+        searchResults.innerHTML = '<p class="no-results">No users found matching your search</p>';
+    } else {
+        searchResults.innerHTML = '';
+        results.forEach(user => {
+            const div = document.createElement('div');
+            div.className = 'search-result-item';
+            div.innerHTML = `
+                <div class="user-avatar ${user.gender.toLowerCase() === 'female' ? 'female' : 'male'}">
+                    ${user.nickname.substring(0, 2).toUpperCase()}
+                </div>
+                <div class="user-info-text">
+                    <div class="user-name">${escapeHtml(user.nickname)}</div>
+                    <div class="user-details">${user.age} Yrs, ${user.state}</div>
+                </div>
+            `;
+            div.addEventListener('click', () => {
+                openPrivateChat(user.nickname);
+                searchModal.classList.remove('active');
+                searchInput.value = '';
+            });
+            searchResults.appendChild(div);
+        });
+    }
+}
+
+// Random user selection
+function selectRandomUser() {
+    const availableUsers = allUsers.filter(user => user.nickname !== currentUser.nickname);
+    if (availableUsers.length === 0) {
+        alert('No other users available to chat with');
+        return;
+    }
+    
+    const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
+    openPrivateChat(randomUser.nickname);
+}
+
+// AI Chat functionality
+aiSend.addEventListener('click', sendAiMessage);
+aiInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        sendAiMessage();
+    }
+});
+
+function sendAiMessage() {
+    const message = aiInput.value.trim();
+    if (!message) return;
+    
+    // Add user message
+    const userMessageDiv = document.createElement('div');
+    userMessageDiv.className = 'ai-message user-message';
+    userMessageDiv.innerHTML = `
+        <div class="message-header">
+            <span class="nickname">You</span>
+        </div>
+        <div class="message-bubble">${escapeHtml(message)}</div>
+    `;
+    aiMessages.appendChild(userMessageDiv);
+    
+    aiInput.value = '';
+    aiMessages.scrollTop = aiMessages.scrollHeight;
+    
+    // Simulate AI response
+    setTimeout(() => {
+        const aiResponse = generateAiResponse(message);
+        const aiMessageDiv = document.createElement('div');
+        aiMessageDiv.className = 'ai-message ai-response';
+        aiMessageDiv.innerHTML = `
+            <div class="message-header">
+                <span class="nickname">AI Assistant</span>
+            </div>
+            <div class="message-bubble">${aiResponse}</div>
+        `;
+        aiMessages.appendChild(aiMessageDiv);
+        aiMessages.scrollTop = aiMessages.scrollHeight;
+    }, 1000);
+}
+
+function generateAiResponse(userMessage) {
+    const responses = [
+        "That's interesting! Tell me more about it.",
+        "I understand. How can I help you with that?",
+        "Great question! Let me think about that...",
+        "I'm here to help! What else would you like to know?",
+        "That's a good point. Have you considered other options?",
+        "I appreciate you sharing that with me.",
+        "Let me help you with that. Could you provide more details?",
+        "That makes sense. What's your next step?",
+        "I'm glad you brought that up. Here's what I think...",
+        "Interesting perspective! Tell me more."
+    ];
+    
+    return responses[Math.floor(Math.random() * responses.length)];
+}
