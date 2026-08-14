@@ -14,13 +14,34 @@ const closeChatBtn = document.getElementById('closeChatBtn');
 const messageInput = document.getElementById('messageInput');
 const sendMessageBtn = document.getElementById('sendMessageBtn');
 const chatMessages = document.getElementById('chatMessages');
-const genderFilter = document.getElementById('genderFilter');
+
+// New modal elements
+const genderFilterBtn = document.getElementById('genderFilterBtn');
+const genderFilterModal = document.getElementById('genderFilterModal');
+const historyBtn = document.getElementById('historyBtn');
+const historyModal = document.getElementById('historyModal');
+const historyList = document.getElementById('historyList');
+const searchBtn = document.getElementById('searchBtn');
+const searchModal = document.getElementById('searchModal');
+const searchInput = document.getElementById('searchInput');
+const searchResults = document.getElementById('searchResults');
+const inboxBtn = document.getElementById('inboxBtn');
+const inboxModal = document.getElementById('inboxModal');
+const inboxList = document.getElementById('inboxList');
+const friendsBtn = document.getElementById('friendsBtn');
+const friendsModal = document.getElementById('friendsModal');
+const friendsList = document.getElementById('friendsList');
+const randomBtn = document.getElementById('randomBtn');
 
 // User data storage
 let currentUser = null;
 let currentChatUser = null;
 let users = [];
 let messages = {};
+let chatHistory = [];
+let inboxMessages = [];
+let friends = [];
+let currentGenderFilter = 'all';
 
 // Initialize age dropdown (18-99)
 function initializeAgeDropdown() {
@@ -195,6 +216,86 @@ disagreeBtn.addEventListener('click', function() {
 function initializeChat() {
     generateSampleUsers();
     renderUsers();
+    generateSampleFriends();
+    generateSampleInbox();
+    generateSampleHistory();
+}
+
+// Generate sample friends
+function generateSampleFriends() {
+    const friendCount = Math.floor(Math.random() * 4) + 2; // 2-5 friends
+    const shuffledUsers = [...users].sort(() => 0.5 - Math.random());
+    
+    for (let i = 0; i < friendCount && i < shuffledUsers.length; i++) {
+        friends.push({
+            ...shuffledUsers[i],
+            status: Math.random() > 0.3 ? 'online' : 'offline'
+        });
+    }
+}
+
+// Generate sample inbox messages
+function generateSampleInbox() {
+    const messageCount = Math.floor(Math.random() * 4) + 3; // 3-6 messages
+    const shuffledUsers = [...users].sort(() => 0.5 - Math.random());
+    
+    for (let i = 0; i < messageCount && i < shuffledUsers.length; i++) {
+        const user = shuffledUsers[i];
+        const messages = [
+            "Hey! How are you doing?",
+            "Would you like to chat?",
+            "I saw your profile, nice to meet you!",
+            "What are you up to today?",
+            "Looking for new friends!",
+            "Hello from the other side!"
+        ];
+        
+        inboxMessages.push({
+            id: i + 1,
+            user: user,
+            message: messages[Math.floor(Math.random() * messages.length)],
+            time: getRandomTime(),
+            unread: Math.random() > 0.5
+        });
+    }
+}
+
+// Generate sample chat history
+function generateSampleHistory() {
+    const historyCount = Math.floor(Math.random() * 5) + 3; // 3-7 history items
+    const shuffledUsers = [...users].sort(() => 0.5 - Math.random());
+    
+    for (let i = 0; i < historyCount && i < shuffledUsers.length; i++) {
+        const user = shuffledUsers[i];
+        const previews = [
+            "That was a great conversation!",
+            "We should chat again sometime.",
+            "Thanks for the interesting talk.",
+            "Had fun chatting with you!",
+            "Looking forward to our next chat."
+        ];
+        
+        chatHistory.push({
+            id: i + 1,
+            user: user,
+            lastMessage: previews[Math.floor(Math.random() * previews.length)],
+            time: getRandomTime(),
+            messageCount: Math.floor(Math.random() * 20) + 5
+        });
+    }
+}
+
+// Get random time within last 24 hours
+function getRandomTime() {
+    const hours = Math.floor(Math.random() * 24);
+    const minutes = Math.floor(Math.random() * 60);
+    if (hours === 0) {
+        return `${minutes} min ago`;
+    } else if (hours < 24) {
+        return `${hours}h ago`;
+    } else {
+        return '1d ago';
+    }
 }
 
 // Open private chat
@@ -213,11 +314,13 @@ function openPrivateChat(user) {
         messages[user.id].forEach(msg => renderMessage(msg));
     } else {
         // Add welcome message
-        renderMessage({
+        const welcomeMsg = {
             type: 'received',
             content: `Hi ${currentUser.username}! I'm ${user.username}. How are you today?`,
             time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
-        });
+        };
+        messages[user.id] = [welcomeMsg];
+        renderMessage(welcomeMsg);
     }
     
     // Show modal
@@ -265,6 +368,9 @@ function sendMessage() {
     }
     messages[currentChatUser.id].push(sentMsg);
     
+    // Update chat history
+    updateChatHistory(currentChatUser, content);
+    
     renderMessage(sentMsg);
     messageInput.value = '';
 
@@ -297,6 +403,24 @@ function sendMessage() {
     }, 1000 + Math.random() * 1000);
 }
 
+// Update chat history
+function updateChatHistory(user, lastMessage) {
+    const existingHistory = chatHistory.find(h => h.user.id === user.id);
+    if (existingHistory) {
+        existingHistory.lastMessage = lastMessage;
+        existingHistory.time = 'Just now';
+        existingHistory.messageCount++;
+    } else {
+        chatHistory.unshift({
+            id: chatHistory.length + 1,
+            user: user,
+            lastMessage: lastMessage,
+            time: 'Just now',
+            messageCount: 1
+        });
+    }
+}
+
 // Send message button click
 sendMessageBtn.addEventListener('click', sendMessage);
 
@@ -307,31 +431,278 @@ messageInput.addEventListener('keypress', function(e) {
     }
 });
 
-// Gender filter
-let currentGenderFilter = 'all';
-genderFilter.addEventListener('click', function() {
-    if (currentGenderFilter === 'all') {
-        currentGenderFilter = 'female';
-    } else if (currentGenderFilter === 'female') {
-        currentGenderFilter = 'male';
-    } else {
-        currentGenderFilter = 'all';
+// Gender Filter Modal
+genderFilterBtn.addEventListener('click', function() {
+    genderFilterModal.classList.add('active');
+});
+
+// Gender filter options
+document.querySelectorAll('.filter-option').forEach(option => {
+    option.addEventListener('click', function() {
+        const filter = this.dataset.filter;
+        currentGenderFilter = filter;
+        
+        // Update active state
+        document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('active'));
+        this.classList.add('active');
+        
+        // Update icon
+        const icon = genderFilterBtn.querySelector('.action-icon');
+        if (filter === 'female') {
+            icon.textContent = '♀';
+            icon.style.color = '#ff69b4';
+        } else if (filter === 'male') {
+            icon.textContent = '♂';
+            icon.style.color = '#0088cc';
+        } else {
+            icon.textContent = '⚥';
+            icon.style.color = '';
+        }
+        
+        renderUsers(currentGenderFilter);
+        genderFilterModal.classList.remove('active');
+    });
+});
+
+// History Modal
+historyBtn.addEventListener('click', function() {
+    renderHistory();
+    historyModal.classList.add('active');
+});
+
+function renderHistory() {
+    historyList.innerHTML = '';
+    
+    if (chatHistory.length === 0) {
+        historyList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📜</div>
+                <div class="empty-state-text">No chat history yet</div>
+                <div class="empty-state-subtext">Start chatting to build your history</div>
+            </div>
+        `;
+        return;
     }
     
-    // Update icon
-    const icon = genderFilter.querySelector('.action-icon');
-    if (currentGenderFilter === 'female') {
-        icon.textContent = '♀';
-        icon.style.color = '#ff69b4';
-    } else if (currentGenderFilter === 'male') {
-        icon.textContent = '♂';
-        icon.style.color = '#0088cc';
-    } else {
-        icon.textContent = '⚥';
-        icon.style.color = '';
+    chatHistory.forEach(item => {
+        const historyItem = document.createElement('div');
+        historyItem.className = 'history-item';
+        historyItem.innerHTML = `
+            <div class="history-user">
+                <div class="history-avatar ${item.user.gender}">
+                    ${item.user.gender === 'female' ? '♀' : '♂'}
+                </div>
+                <div class="history-username">${item.user.username}</div>
+            </div>
+            <div class="history-preview">${item.lastMessage}</div>
+            <div class="history-time">${item.time} • ${item.messageCount} messages</div>
+        `;
+        
+        historyItem.addEventListener('click', () => {
+            historyModal.classList.remove('active');
+            openPrivateChat(item.user);
+        });
+        
+        historyList.appendChild(historyItem);
+    });
+}
+
+// Search Modal
+searchBtn.addEventListener('click', function() {
+    searchInput.value = '';
+    searchResults.innerHTML = '';
+    searchModal.classList.add('active');
+    searchInput.focus();
+});
+
+searchInput.addEventListener('input', function() {
+    const query = this.value.trim().toLowerCase();
+    const searchType = document.querySelector('input[name="searchType"]:checked').value;
+    
+    if (query.length < 2) {
+        searchResults.innerHTML = '';
+        return;
     }
     
-    renderUsers(currentGenderFilter);
+    let filteredUsers = users.filter(user => {
+        if (searchType === 'all') {
+            return user.username.toLowerCase().includes(query) ||
+                   user.state.toLowerCase().includes(query) ||
+                   user.country.toLowerCase().includes(query);
+        } else if (searchType === 'username') {
+            return user.username.toLowerCase().includes(query);
+        } else if (searchType === 'state') {
+            return user.state.toLowerCase().includes(query);
+        } else if (searchType === 'country') {
+            return user.country.toLowerCase().includes(query);
+        }
+        return false;
+    });
+    
+    renderSearchResults(filteredUsers);
+});
+
+function renderSearchResults(results) {
+    searchResults.innerHTML = '';
+    
+    if (results.length === 0) {
+        searchResults.innerHTML = '<div class="no-results">No users found matching your search</div>';
+        return;
+    }
+    
+    results.forEach(user => {
+        const resultItem = document.createElement('div');
+        resultItem.className = 'search-result-item';
+        resultItem.innerHTML = `
+            <div class="user-avatar ${user.gender}" style="width: 40px; height: 40px; font-size: 18px;">
+                ${user.gender === 'female' ? '♀' : '♂'}
+            </div>
+            <div class="user-info">
+                <div class="user-name">${user.username}</div>
+                <div class="user-details">${user.age} Yrs • ${user.state}</div>
+                <div class="user-details">${user.country}</div>
+            </div>
+            <div class="user-flag">${getCountryFlag(user.country)}</div>
+        `;
+        
+        resultItem.addEventListener('click', () => {
+            searchModal.classList.remove('active');
+            openPrivateChat(user);
+        });
+        
+        searchResults.appendChild(resultItem);
+    });
+}
+
+// Search type change
+document.querySelectorAll('input[name="searchType"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        if (searchInput.value.trim()) {
+            searchInput.dispatchEvent(new Event('input'));
+        }
+    });
+});
+
+// Inbox Modal
+inboxBtn.addEventListener('click', function() {
+    renderInbox();
+    inboxModal.classList.add('active');
+});
+
+function renderInbox() {
+    inboxList.innerHTML = '';
+    
+    if (inboxMessages.length === 0) {
+        inboxList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">📥</div>
+                <div class="empty-state-text">No messages in your inbox</div>
+                <div class="empty-state-subtext">Messages will appear here when you receive them</div>
+            </div>
+        `;
+        return;
+    }
+    
+    inboxMessages.forEach(msg => {
+        const inboxItem = document.createElement('div');
+        inboxItem.className = `inbox-item ${msg.unread ? 'unread' : ''}`;
+        inboxItem.innerHTML = `
+            <div class="inbox-header">
+                <div class="inbox-user">
+                    <div class="inbox-avatar ${msg.user.gender}">
+                        ${msg.user.gender === 'female' ? '♀' : '♂'}
+                    </div>
+                    <div class="inbox-username">${msg.user.username}</div>
+                </div>
+                <div class="inbox-time">${msg.time}</div>
+            </div>
+            <div class="inbox-message">${msg.message}</div>
+            ${msg.unread ? '<span class="inbox-badge">New</span>' : ''}
+        `;
+        
+        inboxItem.addEventListener('click', () => {
+            msg.unread = false;
+            inboxModal.classList.remove('active');
+            openPrivateChat(msg.user);
+        });
+        
+        inboxList.appendChild(inboxItem);
+    });
+}
+
+// Friends Modal
+friendsBtn.addEventListener('click', function() {
+    renderFriends();
+    friendsModal.classList.add('active');
+});
+
+function renderFriends() {
+    friendsList.innerHTML = '';
+    
+    if (friends.length === 0) {
+        friendsList.innerHTML = `
+            <div class="empty-state">
+                <div class="empty-state-icon">👥</div>
+                <div class="empty-state-text">No friends yet</div>
+                <div class="empty-state-subtext">Add users to your friends list to see them here</div>
+            </div>
+        `;
+        return;
+    }
+    
+    friends.forEach(friend => {
+        const friendItem = document.createElement('div');
+        friendItem.className = 'friend-item';
+        friendItem.innerHTML = `
+            <div class="friend-avatar ${friend.gender}">
+                ${friend.gender === 'female' ? '♀' : '♂'}
+            </div>
+            <div class="friend-info">
+                <div class="friend-name">${friend.username}</div>
+                <div class="friend-details">${friend.age} Yrs • ${friend.country}</div>
+                <div class="friend-status">${friend.status === 'online' ? '🟢 Online' : '⚫ Offline'}</div>
+            </div>
+            <div class="friend-actions">
+                <button class="friend-action-btn chat">Chat</button>
+                <button class="friend-action-btn remove">Remove</button>
+            </div>
+        `;
+        
+        // Chat button
+        friendItem.querySelector('.chat').addEventListener('click', () => {
+            friendsModal.classList.remove('active');
+            openPrivateChat(friend);
+        });
+        
+        // Remove button
+        friendItem.querySelector('.remove').addEventListener('click', (e) => {
+            e.stopPropagation();
+            friends = friends.filter(f => f.id !== friend.id);
+            renderFriends();
+        });
+        
+        friendsList.appendChild(friendItem);
+    });
+}
+
+// Random Chat
+randomBtn.addEventListener('click', function() {
+    const onlineUsers = users.filter(user => user.online);
+    if (onlineUsers.length === 0) {
+        alert('No online users available for random chat');
+        return;
+    }
+    
+    const randomUser = onlineUsers[Math.floor(Math.random() * onlineUsers.length)];
+    openPrivateChat(randomUser);
+});
+
+// Close modal buttons
+document.querySelectorAll('.close-modal-btn').forEach(btn => {
+    btn.addEventListener('click', function() {
+        const modal = this.closest('.modal');
+        modal.classList.remove('active');
+    });
 });
 
 // Tab switching
@@ -349,15 +720,22 @@ logoutBtn.addEventListener('click', function() {
     currentChatUser = null;
     users = [];
     messages = {};
+    chatHistory = [];
+    inboxMessages = [];
+    friends = [];
     currentGenderFilter = 'all';
     
     // Reset form
     registrationForm.reset();
     
     // Reset gender filter icon
-    const icon = genderFilter.querySelector('.action-icon');
+    const icon = genderFilterBtn.querySelector('.action-icon');
     icon.textContent = '⚥';
     icon.style.color = '';
+    
+    // Reset gender filter modal options
+    document.querySelectorAll('.filter-option').forEach(opt => opt.classList.remove('active'));
+    document.querySelector('.filter-option[data-filter="all"]').classList.add('active');
     
     // Show landing screen
     loginScreen.style.display = 'flex';
@@ -366,6 +744,11 @@ logoutBtn.addEventListener('click', function() {
     // Close any open modals
     privateChatModal.classList.remove('active');
     termsModal.classList.remove('active');
+    genderFilterModal.classList.remove('active');
+    historyModal.classList.remove('active');
+    searchModal.classList.remove('active');
+    inboxModal.classList.remove('active');
+    friendsModal.classList.remove('active');
 });
 
 // Close modal when clicking outside
@@ -376,6 +759,21 @@ window.addEventListener('click', function(e) {
     if (e.target === privateChatModal) {
         privateChatModal.classList.remove('active');
         currentChatUser = null;
+    }
+    if (e.target === genderFilterModal) {
+        genderFilterModal.classList.remove('active');
+    }
+    if (e.target === historyModal) {
+        historyModal.classList.remove('active');
+    }
+    if (e.target === searchModal) {
+        searchModal.classList.remove('active');
+    }
+    if (e.target === inboxModal) {
+        inboxModal.classList.remove('active');
+    }
+    if (e.target === friendsModal) {
+        friendsModal.classList.remove('active');
     }
 });
 

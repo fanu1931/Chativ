@@ -751,3 +751,395 @@ body {
         text-align: center;
     }
 }
+
+/* Small Modal */
+.small-modal {
+    max-width: 350px;
+}
+
+/* Close Modal Button */
+.close-modal-btn {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 28px;
+    cursor: pointer;
+    width: 30px;
+    height: 30px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: background 0.3s;
+}
+
+.close-modal-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+/* Filter Options */
+.filter-options {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.filter-option {
+    padding: 15px 20px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    background: white;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-size: 16px;
+    font-weight: 500;
+    text-align: center;
+}
+
+.filter-option:hover {
+    border-color: #0088cc;
+    background: #f0f8ff;
+}
+
+.filter-option.active {
+    background: #0088cc;
+    color: white;
+    border-color: #0088cc;
+}
+
+/* History List */
+.history-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.history-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.history-item:hover {
+    background: #f9f9f9;
+}
+
+.history-item:last-child {
+    border-bottom: none;
+}
+
+.history-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+}
+
+.history-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+}
+
+.history-avatar.female {
+    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+}
+
+.history-avatar.male {
+    background: linear-gradient(135deg, #0088cc 0%, #0066a3 100%);
+}
+
+.history-username {
+    font-weight: 600;
+    color: #333;
+}
+
+.history-preview {
+    font-size: 14px;
+    color: #666;
+    margin-bottom: 5px;
+}
+
+.history-time {
+    font-size: 12px;
+    color: #999;
+}
+
+/* Search Container */
+.search-container {
+    margin-bottom: 20px;
+}
+
+.search-input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 8px;
+    font-size: 16px;
+    margin-bottom: 15px;
+    transition: border-color 0.3s;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: #0088cc;
+}
+
+.search-filters {
+    display: flex;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.search-filters label {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.search-filters input[type="radio"] {
+    cursor: pointer;
+}
+
+/* Search Results */
+.search-results {
+    max-height: 350px;
+    overflow-y: auto;
+}
+
+.search-result-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.3s;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.search-result-item:hover {
+    background: #f9f9f9;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.no-results {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-style: italic;
+}
+
+/* Inbox List */
+.inbox-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.inbox-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.3s;
+}
+
+.inbox-item:hover {
+    background: #f9f9f9;
+}
+
+.inbox-item.unread {
+    background: #f0f8ff;
+}
+
+.inbox-item:last-child {
+    border-bottom: none;
+}
+
+.inbox-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.inbox-user {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.inbox-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: white;
+}
+
+.inbox-avatar.female {
+    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+}
+
+.inbox-avatar.male {
+    background: linear-gradient(135deg, #0088cc 0%, #0066a3 100%);
+}
+
+.inbox-username {
+    font-weight: 600;
+    color: #333;
+}
+
+.inbox-time {
+    font-size: 12px;
+    color: #999;
+}
+
+.inbox-message {
+    font-size: 14px;
+    color: #666;
+}
+
+.inbox-badge {
+    background: #f44336;
+    color: white;
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-weight: 600;
+}
+
+/* Friends List */
+.friends-list {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.friend-item {
+    padding: 15px;
+    border-bottom: 1px solid #f0f0f0;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    transition: background 0.3s;
+}
+
+.friend-item:hover {
+    background: #f9f9f9;
+}
+
+.friend-item:last-child {
+    border-bottom: none;
+}
+
+.friend-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    color: white;
+}
+
+.friend-avatar.female {
+    background: linear-gradient(135deg, #ff69b4 0%, #ff1493 100%);
+}
+
+.friend-avatar.male {
+    background: linear-gradient(135deg, #0088cc 0%, #0066a3 100%);
+}
+
+.friend-info {
+    flex: 1;
+}
+
+.friend-name {
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 4px;
+}
+
+.friend-details {
+    font-size: 14px;
+    color: #666;
+}
+
+.friend-status {
+    font-size: 12px;
+    color: #4caf50;
+}
+
+.friend-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.friend-action-btn {
+    padding: 8px 12px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.friend-action-btn.chat {
+    background: #0088cc;
+    color: white;
+}
+
+.friend-action-btn.chat:hover {
+    background: #0066a3;
+}
+
+.friend-action-btn.remove {
+    background: #f44336;
+    color: white;
+}
+
+.friend-action-btn.remove:hover {
+    background: #d32f2f;
+}
+
+.no-friends {
+    text-align: center;
+    padding: 30px;
+    color: #999;
+    font-style: italic;
+}
+
+/* Empty State */
+.empty-state {
+    text-align: center;
+    padding: 40px 20px;
+    color: #999;
+}
+
+.empty-state-icon {
+    font-size: 48px;
+    margin-bottom: 15px;
+}
+
+.empty-state-text {
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+.empty-state-subtext {
+    font-size: 14px;
+    color: #bbb;
+}
