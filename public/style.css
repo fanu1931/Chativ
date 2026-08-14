@@ -1346,7 +1346,7 @@ body {
     background-color: rgba(0, 0, 0, 0.6);
 }
 
-.modal.active {
+.modal.active, .modal:not(.hidden) {
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1406,6 +1406,55 @@ body {
     border-top: 1px solid var(--gray-medium);
     display: flex;
     justify-content: center;
+}
+
+/* Login and Register Form Styles */
+.login-form, .register-form {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.login-form .form-group, .register-form .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+
+.login-form .form-group label, .register-form .form-group label {
+    font-weight: 600;
+    color: var(--text-dark);
+    font-size: 14px;
+}
+
+.login-form .form-group input, .register-form .form-group input {
+    padding: 12px;
+    border: 1px solid var(--gray-medium);
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.3s ease;
+}
+
+.login-form .form-group input:focus, .register-form .form-group input:focus {
+    outline: none;
+    border-color: var(--primary-blue);
+}
+
+.form-switch {
+    text-align: center;
+    margin-top: 10px;
+    font-size: 14px;
+    color: var(--text-light);
+}
+
+.form-switch a {
+    color: var(--primary-blue);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.form-switch a:hover {
+    text-decoration: underline;
 }
 
 /* Private Chat Modal */

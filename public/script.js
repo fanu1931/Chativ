@@ -49,6 +49,16 @@ const aiMessages = document.getElementById('ai-messages');
 const aiInput = document.getElementById('ai-input');
 const aiSend = document.getElementById('ai-send');
 
+// Login and Register modal elements
+const loginModal = document.getElementById('login-modal');
+const loginModalClose = document.getElementById('login-modal-close');
+const registerModal = document.getElementById('register-modal');
+const registerModalClose = document.getElementById('register-modal-close');
+const switchToRegister = document.getElementById('switch-to-register');
+const switchToLogin = document.getElementById('switch-to-login');
+const loginSubmit = document.getElementById('login-submit');
+const registerSubmit = document.getElementById('register-submit');
+
 // Logout elements
 const logoutBtn = document.getElementById('logout-btn');
 const mobileLogoutBtn = document.getElementById('mobile-logout');
@@ -199,12 +209,86 @@ const registerLink = document.querySelector('.register-link');
 
 loginLink.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('Login is not required. Simply fill in your details and click "START CHAT NOW" to begin chatting!');
+    loginModal.classList.remove('hidden');
 });
 
 registerLink.addEventListener('click', (e) => {
     e.preventDefault();
-    alert('Registration is not required. Simply fill in your details and click "START CHAT NOW" to begin chatting!');
+    registerModal.classList.remove('hidden');
+});
+
+// Login modal close button
+loginModalClose.addEventListener('click', () => {
+    loginModal.classList.add('hidden');
+});
+
+// Register modal close button
+registerModalClose.addEventListener('click', () => {
+    registerModal.classList.add('hidden');
+});
+
+// Switch to Register from Login
+switchToRegister.addEventListener('click', (e) => {
+    e.preventDefault();
+    loginModal.classList.add('hidden');
+    registerModal.classList.remove('hidden');
+});
+
+// Switch to Login from Register
+switchToLogin.addEventListener('click', (e) => {
+    e.preventDefault();
+    registerModal.classList.add('hidden');
+    loginModal.classList.remove('hidden');
+});
+
+// Login form submission
+loginSubmit.addEventListener('click', () => {
+    const username = document.getElementById('login-username').value.trim();
+    const password = document.getElementById('login-password').value.trim();
+
+    if (!username || !password) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    // For demo purposes, simulate login by using the main form
+    alert('Login feature is for demonstration. Please use the main form to enter chat.');
+    loginModal.classList.add('hidden');
+});
+
+// Register form submission
+registerSubmit.addEventListener('click', () => {
+    const username = document.getElementById('register-username').value.trim();
+    const email = document.getElementById('register-email').value.trim();
+    const password = document.getElementById('register-password').value.trim();
+    const confirmPassword = document.getElementById('register-confirm-password').value.trim();
+
+    if (!username || !email || !password || !confirmPassword) {
+        alert('Please fill in all fields');
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+    }
+
+    // For demo purposes, simulate registration
+    alert('Registration feature is for demonstration. Please use the main form to enter chat.');
+    registerModal.classList.add('hidden');
+});
+
+// Close modals on outside click
+loginModal.addEventListener('click', (e) => {
+    if (e.target === loginModal) {
+        loginModal.classList.add('hidden');
+    }
+});
+
+registerModal.addEventListener('click', (e) => {
+    if (e.target === registerModal) {
+        registerModal.classList.add('hidden');
+    }
 });
 
 // Terms modal functionality
@@ -950,7 +1034,7 @@ profileModal.addEventListener('click', (e) => {
 // Load saved state from localStorage
 const savedState = localStorage.getItem('userState');
 if (savedState) {
-    stateInput.value = savedState;
+    stateSelect.value = savedState;
 }
 
 // Hamburger menu toggle
@@ -1236,6 +1320,12 @@ document.addEventListener('keydown', (e) => {
     }
     if (e.key === 'Escape' && termsModal && !termsModal.classList.contains('hidden')) {
         termsModal.classList.add('hidden');
+    }
+    if (e.key === 'Escape' && loginModal && !loginModal.classList.contains('hidden')) {
+        loginModal.classList.add('hidden');
+    }
+    if (e.key === 'Escape' && registerModal && !registerModal.classList.contains('hidden')) {
+        registerModal.classList.add('hidden');
     }
 });
 
