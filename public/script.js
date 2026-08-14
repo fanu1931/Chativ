@@ -169,6 +169,41 @@ function getSelectedGender() {
     return '';
 }
 
+// Function to proceed to chat screen
+function proceedToChat() {
+    // Save state to localStorage
+    localStorage.setItem('userState', currentUser.state);
+
+    // Initialize socket and join
+    try {
+        initSocket();
+        socket.emit('join', currentUser);
+    } catch (error) {
+        console.error('Socket initialization error:', error);
+        // Continue with UI update even if socket fails
+    }
+
+    // Update UI - transition from landing to chat
+    if (landingPage) landingPage.classList.add('hidden');
+    if (chatPage) chatPage.classList.remove('hidden');
+    if (welcomeMessage) welcomeMessage.textContent = `Welcome to ${currentUser.state} Chat Room`;
+    if (navUsername) navUsername.textContent = currentUser.nickname;
+
+    // Clear messages
+    if (messagesContainer) messagesContainer.innerHTML = '';
+    displaySystemMessage(`Welcome to ${currentUser.state} Chat Room!`);
+    
+    // Display state room in sidebar
+    displayRooms();
+    
+    // Initialize inbox
+    displayInbox();
+
+    // Hide terms modal and backdrop
+    if (termsModal) termsModal.classList.add('hidden');
+    if (backdropOverlay) backdropOverlay.classList.remove('active');
+}
+
 // Get state value (from dropdown or manual input)
 function getStateValue() {
     const stateSelect = document.getElementById('state');
@@ -868,65 +903,71 @@ function initializeEventListeners() {
             const country = countryInput.value;
             const state = getStateValue();
 
+            // Validate all required fields
             if (!nickname || !age || !gender || !country || !state) {
-                alert('Please fill in all fields');
+                alert('Please fill in all fields: Username, Gender, Age, Country, and State are required.');
                 return;
             }
 
+            // Validate age requirement
             if (age < 18) {
                 alert('You must be 18 or older to join this chat.');
                 return;
             }
 
-            // Show terms modal
-            if (termsModal) termsModal.classList.remove('hidden');
+            // Validate nickname length
+            if (nickname.length < 3) {
+                alert('Username must be at least 3 characters long.');
+                return;
+            }
+
+            // Store validated data for later use
+            currentUser = { nickname, age, gender, country, state };
+
+            // Try to show terms modal with fallback
+            try {
+                if (termsModal) {
+                    termsModal.classList.remove('hidden');
+                    // Show backdrop overlay
+                    if (backdropOverlay) backdropOverlay.classList.add('active');
+                } else {
+                    // Fallback: if terms modal doesn't exist, proceed directly to chat
+                    console.warn('Terms modal not found, proceeding directly to chat');
+                    proceedToChat();
+                }
+            } catch (error) {
+                console.error('Error showing terms modal:', error);
+                // Fallback: proceed directly to chat on any error
+                proceedToChat();
+            }
         });
+    }
+
+    // Ensure terms modal exists and is properly hidden initially
+    if (termsModal) {
+        termsModal.classList.add('hidden');
     }
 
     if (termsAgreeBtn) {
         termsAgreeBtn.addEventListener('click', () => {
-            // Proceed with chat entry
-            const nickname = nicknameInput.value.trim();
-            const age = ageInput.value;
-            const gender = getSelectedGender();
-            const country = countryInput.value;
-            const state = getStateValue();
-
-            currentUser = { nickname, age, gender, country, state };
-
-            // Save state to localStorage
-            localStorage.setItem('userState', state);
-
-            // Initialize socket and join
-            initSocket();
-            socket.emit('join', currentUser);
-
-            // Update UI
-            if (landingPage) landingPage.classList.add('hidden');
-            if (chatPage) chatPage.classList.remove('hidden');
-            if (welcomeMessage) welcomeMessage.textContent = `Welcome to ${state} Chat Room`;
-            if (navUsername) navUsername.textContent = nickname;
-
-            // Clear messages
-            if (messagesContainer) messagesContainer.innerHTML = '';
-            displaySystemMessage(`Welcome to ${state} Chat Room!`);
-            
-            // Display state room in sidebar
-            displayRooms();
-            
-            // Initialize inbox
-            displayInbox();
-
-            // Hide terms modal
-            if (termsModal) termsModal.classList.add('hidden');
-            if (backdropOverlay) backdropOverlay.classList.remove('active');
+            // Proceed to chat using the centralized function
+            proceedToChat();
         });
     }
 
     if (termsDisagreeBtn) {
         termsDisagreeBtn.addEventListener('click', () => {
+            // Close terms modal and backdrop
             if (termsModal) termsModal.classList.add('hidden');
             if (backdropOverlay) backdropOverlay.classList.remove('active');
+            // Reset current user data since they disagreed
+            currentUser = {
+                nickname: '',
+                age: '',
+                gender: '',
+                country: '',
+                state: ''
+            };
         });
     }
 
@@ -1430,39 +1471,46 @@ function initializeEventListeners() {
 
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', () => {
-    // Initialize DOM elements
-    initializeDOMElements();
-    
-    // Initialize event listeners
-    initializeEventListeners();
-    
-    // Hide all modals
-    if (termsModal) termsModal.classList.add('hidden');
-    if (legalModal) legalModal.classList.add('hidden');
-    if (historyModal) historyModal.classList.add('hidden');
-    if (searchModal) searchModal.classList.add('hidden');
-    if (friendsModal) friendsModal.classList.add('hidden');
-    if (loginModal) loginModal.classList.add('hidden');
-    if (registerModal) registerModal.classList.add('hidden');
-    if (privateChatModal) privateChatModal.classList.add('hidden');
-    if (profileModal) profileModal.classList.add('hidden');
-    
-    // Ensure backdrop overlay is hidden
-    if (backdropOverlay) backdropOverlay.classList.remove('active');
-    
-    // Ensure mobile menu is closed
-    if (mobileNavMenu) mobileNavMenu.classList.remove('active');
-    if (hamburgerMenu) hamburgerMenu.classList.remove('active');
+    try {
+        // Initialize DOM elements
+        initializeDOMElements();
+        
+        // Initialize event listeners
+        initializeEventListeners();
+        
+        // Hide all modals
+        if (termsModal) termsModal.classList.add('hidden');
+        if (legalModal) legalModal.classList.add('hidden');
+        if (historyModal) historyModal.classList.add('hidden');
+        if (searchModal) searchModal.classList.add('hidden');
+        if (friendsModal) friendsModal.classList.add('hidden');
+        if (loginModal) loginModal.classList.add('hidden');
+        if (registerModal) registerModal.classList.add('hidden');
+        if (privateChatModal) privateChatModal.classList.add('hidden');
+        if (profileModal) profileModal.classList.add('hidden');
+        
+        // Ensure backdrop overlay is hidden
+        if (backdropOverlay) backdropOverlay.classList.remove('active');
+        
+        // Ensure mobile menu is closed
+        if (mobileNavMenu) mobileNavMenu.classList.remove('active');
+        if (hamburgerMenu) hamburgerMenu.classList.remove('active');
 
-    // Load saved state from localStorage
-    const savedState = localStorage.getItem('userState');
-    if (savedState && stateInput) {
-        stateInput.value = savedState;
-    }
+        // Load saved state from localStorage
+        const savedState = localStorage.getItem('userState');
+        if (savedState) {
+            const stateSelect = document.getElementById('state');
+            if (stateSelect) {
+                stateSelect.value = savedState;
+            }
+        }
 
-    // Initialize mobile view on page load
-    if (window.innerWidth <= 768) {
-        switchMobileTab('chat');
+        // Initialize mobile view on page load
+        if (window.innerWidth <= 768) {
+            switchMobileTab('chat');
+        }
+    } catch (error) {
+        console.error('Error during page initialization:', error);
     }
 });
 
