@@ -43,11 +43,6 @@ const searchButton = document.getElementById('search-button');
 const searchResults = document.getElementById('search-results');
 const friendsModal = document.getElementById('friends-modal');
 const friendsModalClose = document.getElementById('friends-modal-close');
-const aiChatModal = document.getElementById('ai-chat-modal');
-const aiChatModalClose = document.getElementById('ai-chat-modal-close');
-const aiMessages = document.getElementById('ai-messages');
-const aiInput = document.getElementById('ai-input');
-const aiSend = document.getElementById('ai-send');
 
 // Login and Register modal elements
 const loginModal = document.getElementById('login-modal');
@@ -1393,11 +1388,6 @@ function handleTabSwitch(tabName) {
                 switchMobileTab('rooms');
             }
             break;
-        case 'ai-chat':
-            // Open AI chat modal
-            aiChatModal.classList.add('active');
-            aiInput.focus();
-            break;
     }
 }
 
@@ -1465,12 +1455,8 @@ friendsModalClose.addEventListener('click', () => {
     friendsModal.classList.remove('active');
 });
 
-aiChatModalClose.addEventListener('click', () => {
-    aiChatModal.classList.remove('active');
-});
-
 // Close modals on outside click
-[historyModal, searchModal, friendsModal, aiChatModal].forEach(modal => {
+[historyModal, searchModal, friendsModal].forEach(modal => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.remove('active');
@@ -1534,63 +1520,4 @@ function selectRandomUser() {
     
     const randomUser = availableUsers[Math.floor(Math.random() * availableUsers.length)];
     openPrivateChat(randomUser.nickname);
-}
-
-// AI Chat functionality
-aiSend.addEventListener('click', sendAiMessage);
-aiInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') {
-        sendAiMessage();
-    }
-});
-
-function sendAiMessage() {
-    const message = aiInput.value.trim();
-    if (!message) return;
-    
-    // Add user message
-    const userMessageDiv = document.createElement('div');
-    userMessageDiv.className = 'ai-message user-message';
-    userMessageDiv.innerHTML = `
-        <div class="message-header">
-            <span class="nickname">You</span>
-        </div>
-        <div class="message-bubble">${escapeHtml(message)}</div>
-    `;
-    aiMessages.appendChild(userMessageDiv);
-    
-    aiInput.value = '';
-    aiMessages.scrollTop = aiMessages.scrollHeight;
-    
-    // Simulate AI response
-    setTimeout(() => {
-        const aiResponse = generateAiResponse(message);
-        const aiMessageDiv = document.createElement('div');
-        aiMessageDiv.className = 'ai-message ai-response';
-        aiMessageDiv.innerHTML = `
-            <div class="message-header">
-                <span class="nickname">AI Assistant</span>
-            </div>
-            <div class="message-bubble">${aiResponse}</div>
-        `;
-        aiMessages.appendChild(aiMessageDiv);
-        aiMessages.scrollTop = aiMessages.scrollHeight;
-    }, 1000);
-}
-
-function generateAiResponse(userMessage) {
-    const responses = [
-        "That's interesting! Tell me more about it.",
-        "I understand. How can I help you with that?",
-        "Great question! Let me think about that...",
-        "I'm here to help! What else would you like to know?",
-        "That's a good point. Have you considered other options?",
-        "I appreciate you sharing that with me.",
-        "Let me help you with that. Could you provide more details?",
-        "That makes sense. What's your next step?",
-        "I'm glad you brought that up. Here's what I think...",
-        "Interesting perspective! Tell me more."
-    ];
-    
-    return responses[Math.floor(Math.random() * responses.length)];
 }

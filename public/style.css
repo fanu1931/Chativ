@@ -1853,57 +1853,6 @@ body {
     transform: translateX(5px);
 }
 
-/* AI Chat Styles */
-.ai-chat-container {
-    display: flex;
-    flex-direction: column;
-    height: 400px;
-}
-
-.ai-messages {
-    flex: 1;
-    padding: 15px;
-    overflow-y: auto;
-    background: #f0f2f5;
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-}
-
-.ai-message {
-    display: flex;
-    flex-direction: column;
-    max-width: 80%;
-}
-
-.ai-message.user-message {
-    align-self: flex-end;
-}
-
-.ai-message.ai-response {
-    align-self: flex-start;
-}
-
-.ai-input-area {
-    display: flex;
-    gap: 10px;
-}
-
-.ai-input-area input {
-    flex: 1;
-    padding: 12px;
-    border: 2px solid var(--gray-medium);
-    border-radius: 6px;
-    font-size: 14px;
-}
-
-.ai-input-area input:focus {
-    outline: none;
-    border-color: var(--primary-blue);
-}
-
 /* Mobile Navigation Logout Link */
 .mobile-nav-menu .logout-link {
     color: var(--danger-red);
