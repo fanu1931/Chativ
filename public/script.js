@@ -114,6 +114,7 @@ function renderUsers(filterGender = 'all') {
         : users.filter(user => user.gender === filterGender);
 
     filteredUsers.forEach(user => {
+        const isFriend = friends.some(f => f.id === user.id);
         const userCard = document.createElement('div');
         userCard.className = 'user-card';
         userCard.innerHTML = `
@@ -126,9 +127,43 @@ function renderUsers(filterGender = 'all') {
                 <div class="user-details">${user.country}</div>
             </div>
             <div class="user-flag">${getCountryFlag(user.country)}</div>
+            <button class="add-friend-btn" data-user-id="${user.id}">
+                ${isFriend ? '✓ Friend' : '+ Add Friend'}
+            </button>
         `;
         
-        userCard.addEventListener('click', () => openPrivateChat(user));
+        // Click on card to open chat (but not on button)
+        userCard.addEventListener('click', (e) => {
+            if (!e.target.classList.contains('add-friend-btn')) {
+                openPrivateChat(user);
+            }
+        });
+        
+        // Add friend button click
+        const addFriendBtn = userCard.querySelector('.add-friend-btn');
+        addFriendBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            if (isFriend) {
+                // Remove friend
+                friends = friends.filter(f => f.id !== user.id);
+                addFriendBtn.textContent = '+ Add Friend';
+                addFriendBtn.style.background = '#0088cc';
+            } else {
+                // Add friend
+                friends.push({
+                    ...user,
+                    status: 'online'
+                });
+                addFriendBtn.textContent = '✓ Friend';
+                addFriendBtn.style.background = '#4caf50';
+            }
+        });
+        
+        // Update button style if already friend
+        if (isFriend) {
+            addFriendBtn.style.background = '#4caf50';
+        }
+        
         usersList.appendChild(userCard);
     });
 
@@ -216,86 +251,6 @@ disagreeBtn.addEventListener('click', function() {
 function initializeChat() {
     generateSampleUsers();
     renderUsers();
-    generateSampleFriends();
-    generateSampleInbox();
-    generateSampleHistory();
-}
-
-// Generate sample friends
-function generateSampleFriends() {
-    const friendCount = Math.floor(Math.random() * 4) + 2; // 2-5 friends
-    const shuffledUsers = [...users].sort(() => 0.5 - Math.random());
-    
-    for (let i = 0; i < friendCount && i < shuffledUsers.length; i++) {
-        friends.push({
-            ...shuffledUsers[i],
-            status: Math.random() > 0.3 ? 'online' : 'offline'
-        });
-    }
-}
-
-// Generate sample inbox messages
-function generateSampleInbox() {
-    const messageCount = Math.floor(Math.random() * 4) + 3; // 3-6 messages
-    const shuffledUsers = [...users].sort(() => 0.5 - Math.random());
-    
-    for (let i = 0; i < messageCount && i < shuffledUsers.length; i++) {
-        const user = shuffledUsers[i];
-        const messages = [
-            "Hey! How are you doing?",
-            "Would you like to chat?",
-            "I saw your profile, nice to meet you!",
-            "What are you up to today?",
-            "Looking for new friends!",
-            "Hello from the other side!"
-        ];
-        
-        inboxMessages.push({
-            id: i + 1,
-            user: user,
-            message: messages[Math.floor(Math.random() * messages.length)],
-            time: getRandomTime(),
-            unread: Math.random() > 0.5
-        });
-    }
-}
-
-// Generate sample chat history
-function generateSampleHistory() {
-    const historyCount = Math.floor(Math.random() * 5) + 3; // 3-7 history items
-    const shuffledUsers = [...users].sort(() => 0.5 - Math.random());
-    
-    for (let i = 0; i < historyCount && i < shuffledUsers.length; i++) {
-        const user = shuffledUsers[i];
-        const previews = [
-            "That was a great conversation!",
-            "We should chat again sometime.",
-            "Thanks for the interesting talk.",
-            "Had fun chatting with you!",
-            "Looking forward to our next chat."
-        ];
-        
-        chatHistory.push({
-            id: i + 1,
-            user: user,
-            lastMessage: previews[Math.floor(Math.random() * previews.length)],
-            time: getRandomTime(),
-            messageCount: Math.floor(Math.random() * 20) + 5
-        });
-    }
-}
-
-// Get random time within last 24 hours
-function getRandomTime() {
-    const hours = Math.floor(Math.random() * 24);
-    const minutes = Math.floor(Math.random() * 60);
-    if (hours === 0) {
-        return `${minutes} min ago`;
-    } else if (hours < 24) {
-        return `${hours}h ago`;
-    } else {
-        return '1d ago';
-    }
 }
 
 // Open private chat
@@ -397,6 +352,9 @@ function sendMessage() {
         
         messages[currentChatUser.id].push(responseMsg);
         
+        // Add to inbox as a new message
+        addToInbox(currentChatUser, responseMsg.content);
+        
         if (currentChatUser) {
             renderMessage(responseMsg);
         }
@@ -418,6 +376,29 @@ function updateChatHistory(user, lastMessage) {
             time: 'Just now',
             messageCount: 1
         });
+    }
+}
+
+// Add message to inbox
+function addToInbox(user, message) {
+    const existingInbox = inboxMessages.find(m => m.user.id === user.id);
+    if (existingInbox) {
+        existingInbox.message = message;
+        existingInbox.time = 'Just now';
+        existingInbox.unread = true;
+    } else {
+        inboxMessages.unshift({
+            id: inboxMessages.length + 1,
+            user: user,
+            message: message,
+            time: 'Just now',
+            unread: true
+        });
+    }
+    
+    // Keep only last 10 messages
+    if (inboxMessages.length > 10) {
+        inboxMessages.pop();
     }
 }
 
@@ -478,7 +459,7 @@ function renderHistory() {
             <div class="empty-state">
                 <div class="empty-state-icon">📜</div>
                 <div class="empty-state-text">No chat history yet</div>
-                <div class="empty-state-subtext">Start chatting to build your history</div>
+                <div class="empty-state-subtext">Start a conversation with an online user!</div>
             </div>
         `;
         return;
@@ -596,8 +577,8 @@ function renderInbox() {
         inboxList.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">📥</div>
-                <div class="empty-state-text">No messages in your inbox</div>
-                <div class="empty-state-subtext">Messages will appear here when you receive them</div>
+                <div class="empty-state-text">Your inbox is empty</div>
+                <div class="empty-state-subtext">No new messages</div>
             </div>
         `;
         return;
@@ -643,8 +624,8 @@ function renderFriends() {
         friendsList.innerHTML = `
             <div class="empty-state">
                 <div class="empty-state-icon">👥</div>
-                <div class="empty-state-text">No friends yet</div>
-                <div class="empty-state-subtext">Add users to your friends list to see them here</div>
+                <div class="empty-state-text">No friends added yet</div>
+                <div class="empty-state-subtext">Click on any user to add them to your friends list!</div>
             </div>
         `;
         return;

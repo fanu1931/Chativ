@@ -516,6 +516,23 @@ body {
     font-size: 24px;
 }
 
+.add-friend-btn {
+    background: #0088cc;
+    color: white;
+    border: none;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.3s;
+    white-space: nowrap;
+}
+
+.add-friend-btn:hover {
+    background: #0066a3;
+}
+
 /* Private Chat Modal */
 .chat-modal {
     display: none;
