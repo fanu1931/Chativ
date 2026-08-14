@@ -215,11 +215,17 @@ registerLink.addEventListener('click', (e) => {
 // Login modal close button
 loginModalClose.addEventListener('click', () => {
     loginModal.classList.add('hidden');
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 // Register modal close button
 registerModalClose.addEventListener('click', () => {
     registerModal.classList.add('hidden');
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 // Switch to Register from Login
@@ -277,12 +283,18 @@ registerSubmit.addEventListener('click', () => {
 loginModal.addEventListener('click', (e) => {
     if (e.target === loginModal) {
         loginModal.classList.add('hidden');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
     }
 });
 
 registerModal.addEventListener('click', (e) => {
     if (e.target === registerModal) {
         registerModal.classList.add('hidden');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
     }
 });
 
@@ -343,10 +355,16 @@ termsAgreeBtn.addEventListener('click', () => {
 
     // Hide terms modal
     termsModal.classList.add('hidden');
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 termsDisagreeBtn.addEventListener('click', () => {
     termsModal.classList.add('hidden');
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 // Enter chat room (original functionality moved to terms agree)
@@ -712,6 +730,9 @@ function openPrivateChat(nickname) {
 closePrivateChatBtn.addEventListener('click', () => {
     privateChatModal.classList.add('hidden');
     currentPrivateChatUser = null;
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 // Send private message
@@ -804,6 +825,9 @@ privateChatModal.addEventListener('click', (e) => {
     if (e.target === privateChatModal) {
         privateChatModal.classList.add('hidden');
         currentPrivateChatUser = null;
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
     }
 });
 
@@ -964,6 +988,9 @@ function openProfileModal() {
 
 closeProfileBtn.addEventListener('click', () => {
     profileModal.classList.add('hidden');
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 updateProfileBtn.addEventListener('click', () => {
@@ -1021,10 +1048,32 @@ function getSelectedEditGender() {
 profileModal.addEventListener('click', (e) => {
     if (e.target === profileModal) {
         profileModal.classList.add('hidden');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
     }
 });
 
-// Initialize on page load
+// Initialize on page load - ensure all modals are hidden
+document.addEventListener('DOMContentLoaded', () => {
+    // Hide all modals
+    if (termsModal) termsModal.classList.add('hidden');
+    if (legalModal) legalModal.classList.add('hidden');
+    if (historyModal) historyModal.classList.add('hidden');
+    if (searchModal) searchModal.classList.add('hidden');
+    if (friendsModal) friendsModal.classList.add('hidden');
+    if (loginModal) loginModal.classList.add('hidden');
+    if (registerModal) registerModal.classList.add('hidden');
+    if (privateChatModal) privateChatModal.classList.add('hidden');
+    if (profileModal) profileModal.classList.add('hidden');
+    
+    // Ensure backdrop overlay is hidden
+    if (backdropOverlay) backdropOverlay.classList.remove('active');
+    
+    // Ensure mobile menu is closed
+    if (mobileNavMenu) mobileNavMenu.classList.remove('active');
+    if (hamburgerMenu) hamburgerMenu.classList.remove('active');
+});
 
 // Load saved state from localStorage
 const savedState = localStorage.getItem('userState');
@@ -1296,7 +1345,13 @@ document.querySelectorAll('[data-modal]').forEach(link => {
 
 // Close modal on X button
 if (modalClose) {
-    modalClose.addEventListener('click', closeModal);
+    modalClose.addEventListener('click', () => {
+        closeModal();
+        // Ensure backdrop overlay is also hidden
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
+    });
 }
 
 // Close modal on outside click
@@ -1304,6 +1359,9 @@ if (legalModal) {
     legalModal.addEventListener('click', (e) => {
         if (e.target === legalModal) {
             closeModal();
+            if (backdropOverlay) {
+                backdropOverlay.classList.remove('active');
+            }
         }
     });
 }
@@ -1312,15 +1370,58 @@ if (legalModal) {
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && legalModal && legalModal.classList.contains('active')) {
         closeModal();
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
     }
     if (e.key === 'Escape' && termsModal && !termsModal.classList.contains('hidden')) {
         termsModal.classList.add('hidden');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
     }
     if (e.key === 'Escape' && loginModal && !loginModal.classList.contains('hidden')) {
         loginModal.classList.add('hidden');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
     }
     if (e.key === 'Escape' && registerModal && !registerModal.classList.contains('hidden')) {
         registerModal.classList.add('hidden');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
+    }
+    if (e.key === 'Escape' && historyModal && historyModal.classList.contains('active')) {
+        historyModal.classList.remove('active');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
+    }
+    if (e.key === 'Escape' && searchModal && searchModal.classList.contains('active')) {
+        searchModal.classList.remove('active');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
+    }
+    if (e.key === 'Escape' && friendsModal && friendsModal.classList.contains('active')) {
+        friendsModal.classList.remove('active');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
+    }
+    if (e.key === 'Escape' && privateChatModal && !privateChatModal.classList.contains('hidden')) {
+        privateChatModal.classList.add('hidden');
+        currentPrivateChatUser = null;
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
+    }
+    if (e.key === 'Escape' && profileModal && !profileModal.classList.contains('hidden')) {
+        profileModal.classList.add('hidden');
+        if (backdropOverlay) {
+            backdropOverlay.classList.remove('active');
+        }
     }
 });
 
@@ -1445,14 +1546,23 @@ document.querySelectorAll('.sub-header-item').forEach(item => {
 // Modal close buttons
 historyModalClose.addEventListener('click', () => {
     historyModal.classList.remove('active');
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 searchModalClose.addEventListener('click', () => {
     searchModal.classList.remove('active');
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 friendsModalClose.addEventListener('click', () => {
     friendsModal.classList.remove('active');
+    if (backdropOverlay) {
+        backdropOverlay.classList.remove('active');
+    }
 });
 
 // Close modals on outside click
@@ -1460,6 +1570,9 @@ friendsModalClose.addEventListener('click', () => {
     modal.addEventListener('click', (e) => {
         if (e.target === modal) {
             modal.classList.remove('active');
+            if (backdropOverlay) {
+                backdropOverlay.classList.remove('active');
+            }
         }
     });
 });
