@@ -9,6 +9,11 @@ const io = socketIo(server);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+// Explicit route for ads.txt
+app.get('/ads.txt', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'ads.txt'));
+});
+
 // Store users and state rooms
 const users = {};
 const stateRooms = {};
