@@ -11,7 +11,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 // Explicit route for ads.txt
 app.get('/ads.txt', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'ads.txt'));
+    res.type('text/plain');
+    res.send('google.com, pub-7304673507574573, DIRECT, f08c47fec0942fa0');
 });
 
 // Store users and state rooms
